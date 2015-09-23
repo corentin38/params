@@ -1,0 +1,1 @@
+sudo stty 1200 cs7 sane evenp parenb -crtscts -F /dev/ttyAMA0

@@ -1,0 +1,19 @@
+sudo stty -F /dev/ttyAMA0 115200 cs8 -cstopb -onlcr -echo -echoe -echok -opost
+sudo stty 1200 cs7 evenp cstopb -igncr -inlcr -brkint -icrnl -opost -isig -icanon -iexten -F /dev/ttyAMA0
+                         cstopb -igncr -inlcr -brkint -icrnl -opost -isig -icanon -iexten -F /dev/ttyAMA0
+sudo stty 1200 cs7 sane evenp parenb -crtscts cstopb -igncr -inlcr -brkint -icrnl -opost -isig -icanon -iexten -F /dev/ttyAMA0
+sudo stty 1200 cs7 sane evenp parenb -crtscts cstopb -F /dev/ttyAMA0
+sudo stty 1200 cs8 sane evenp parenb -crtscts cstopb -F /dev/ttyAMA0
+sudo stty 1200 cs7 sane evenp parenb -crtscts -F /dev/ttyAMA0
+sudo stty 1200 cs7 sane evenp parenb -crtscts -F /dev/ttyAMA0
+
+
+
+sudo stty 1200 cs7 sane evenp parenb -crtscts -F /dev/ttyAMA0
+
+
+
+
+
+Equivalent to :
+sudo stty 1200 cs7 sane evenp parenb -crtscts cstopb -onlcr -echo -echoe -echok -opost -igncr -inlcr -brkint -icrnl -isig -icanon -iexten -F /dev/ttyAMA0
