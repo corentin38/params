@@ -1,0 +1,11 @@
+
+
+gcc
+g++
+
+cmake
+
+libgmp10
+libgmp-dev
+
+libboost-all-dev
