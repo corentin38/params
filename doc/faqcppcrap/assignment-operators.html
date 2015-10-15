@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>[12] Assignment operators, C++ FAQ Lite</title>
+<meta name="FILENAME" content="assignment-operators.html">
+<meta name="ABSTRACT" content="[12] Assignment operators, C++ FAQ Lite">
+<meta name="OWNER" content="cline@parashift.com">
+<meta name="AUTHOR" content="Marshall Cline, cline@parashift.com">
+
+<link rev="made" href="mailto:cline@parashift.com">
+</head>
+<body>
+<h1><a name="top"></a>[12] Assignment operators<br>
+<small><small>(Part of <a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html"><em>C++ FAQ Lite</em></a>, <a indepth="true" href="copy-permissions.html#[1.2]">Copyright&nbsp;© 1991-2000</a>, <a href="http://marshall-cline.att.net/" target="OutsideTheFAQ">Marshall Cline</a>, <a href="mailto:cline@parashift.com">cline@parashift.com</a>)</small></small></h1>
+<hr>
+<h3>FAQs in section [12]:</h3>
+<ul>
+<li><a indepth="true" href="assignment-operators.html#[12.1]">[12.1] What is "self assignment"?</a> <img src="updated.gif" alt="UPDATED!"></li>
+<li><a indepth="true" href="assignment-operators.html#[12.2]">[12.2] Why should I worry about "self assignment"?</a></li>
+<li><a indepth="true" href="assignment-operators.html#[12.3]">[12.3] OK, OK, already; I'll handle self-assignment.  How do
+I do it?</a> <img src="updated.gif" alt="UPDATED!"></li>
+</ul>
+<p></p><hr>
+<p><a name="[12.1]"></a>
+</p><h3>[12.1] What is "self assignment"? <img src="updated.gif" alt="UPDATED!"></h3>
+<small><em>[Recently changed "knowning" to "knowing" thanks to <a href="mailto:brahms@mindspring.com">Stan Brown</a> (on 1/00).  <a indepth="true" href="assignment-operators.html#[12.3]">Click here to go to the next FAQ in the "chain" of recent changes<!--rawtext:[12.3]:rawtext--></a>.]</em></small>
+<p>Self assignment is when someone assigns an object to itself.  For example,
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;#include&nbsp;"Fred.hpp"&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Declares&nbsp;class&nbsp;<tt>Fred</tt></em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;userCode(Fred&amp;&nbsp;x)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x&nbsp;=&nbsp;x;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Self-assignment</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>Obviously no one ever explicitly does a self assignment like the above, but
+since more than one pointer or reference can point to the same object
+(aliasing), it is possible to have self assignment without knowing it:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;#include&nbsp;"Fred.hpp"&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Declares&nbsp;class&nbsp;<tt>Fred</tt></em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;userCode(Fred&amp;&nbsp;x,&nbsp;Fred&amp;&nbsp;y)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x&nbsp;=&nbsp;y;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Could&nbsp;be&nbsp;self-assignment&nbsp;if&nbsp;<tt>&amp;x&nbsp;==&nbsp;&amp;y</tt></em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;main()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fred&nbsp;z;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;userCode(z,&nbsp;z);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="dtors.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="operator-overloading.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[12.2]"></a>
+</p><h3>[12.2] Why should I worry about "self assignment"?</h3>
+<p>If you don't worry about <a indepth="true" href="assignment-operators.html#[12.1]">self assignment<!--rawtext:[12.1]:rawtext--></a>,
+you'll expose your users to some very subtle bugs that have very subtle and
+often disastrous symptoms.  For example, the following class will cause a
+complete disaster in the case of self-assignment:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Wilma&nbsp;{&nbsp;};<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Fred&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fred()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;p_(new&nbsp;Wilma())&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fred(const&nbsp;Fred&amp;&nbsp;f)&nbsp;&nbsp;&nbsp;:&nbsp;p_(new&nbsp;Wilma(*f.p_))&nbsp;{&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;~Fred()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;delete&nbsp;p_;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fred&amp;&nbsp;operator=&nbsp;(const&nbsp;Fred&amp;&nbsp;f)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Bad&nbsp;code:&nbsp;Doesn't&nbsp;handle&nbsp;self-assignment!</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delete&nbsp;p_;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Line&nbsp;#1</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p_&nbsp;=&nbsp;new&nbsp;Wilma(*f.p_);&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Line&nbsp;#2</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;*this;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;private:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wilma*&nbsp;p_;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;};
+</tt>
+</p><p>If someone assigns a <tt>Fred</tt> object to itself, line #1 deletes both
+<tt>this-&gt;p_</tt> and <tt>f.p_</tt> since <tt>*this</tt> and <tt>f</tt> are the
+same object.  But line #2 uses <tt>*f.p_</tt>, which is no longer a valid
+object.  This will likely cause a major disaster.
+</p><p>The bottom line is that <em>you</em> the author of class <tt>Fred</tt> are responsible
+to <a indepth="true" href="assignment-operators.html#[12.3]">make sure self-assignment on a <tt>Fred</tt> object is
+innocuous<!--rawtext:[12.3]:rawtext--></a>.  Do <em>not</em> assume that users won't ever do that to your
+objects.  It is <em>your</em> fault if your object crashes when it gets a
+self-assignment.
+</p><p></p><blockquote><small>
+<p>Aside: the above <tt>Fred::operator=&nbsp;(const&nbsp;Fred&amp;)</tt> has a second problem:
+<a indepth="true" href="exceptions.html">If an exception is thrown<!--rawtext:[17]:rawtext--></a> while evaluating <tt>new&nbsp;Wilma(*f.p_)</tt> (e.g., <a indepth="true" href="freestore-mgmt.html#[16.5]">an out-of-memory
+exception<!--rawtext:[16.5]:rawtext--></a> or <a indepth="true" href="exceptions.html#[17.1]">an exception in <tt>Wilma</tt>'s copy
+constructor<!--rawtext:[17.1]:rawtext--></a>), <tt>this-&gt;p_</tt> will be a dangling pointer — it will
+point to memory that is no longer valid.  This can be solved by allocating the
+new objects before deleting the old objects.
+</p></small><p><small></small></p></blockquote>
+<p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="dtors.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="operator-overloading.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[12.3]"></a>
+</p><h3>[12.3] OK, OK, already; I'll handle self-assignment.  How do
+I do it? <img src="updated.gif" alt="UPDATED!"></h3>
+<small><em>[Recently reworded the last paragraph thanks to <a href="mailto:brahms@mindspring.com">Stan Brown</a> (on 1/00).  <a indepth="true" href="operator-overloading.html#[13.5]">Click here to go to the next FAQ in the "chain" of recent changes<!--rawtext:[13.5]:rawtext--></a>.]</em></small>
+<p><a indepth="true" href="assignment-operators.html#[12.2]">You should worry about self assignment every time you
+create a class<!--rawtext:[12.2]:rawtext--></a>.  This does <em>not</em> mean that you need to add extra
+code to all your classes: as long as your objects gracefully handle self
+assignment, it doesn't matter whether you had to add extra code or not.
+</p><p>If you do need to add extra code to your assignment operator, here's a simple
+and effective technique:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;Fred&amp;&nbsp;Fred::operator=&nbsp;(const&nbsp;Fred&amp;&nbsp;f)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(this&nbsp;==&nbsp;&amp;f)&nbsp;return&nbsp;*this;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Gracefully&nbsp;handle&nbsp;<a indepth="true" href="assignment-operators.html#[12.1]">self&nbsp;assignment<!--rawtext:[12.1]:rawtext--></a></em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Put&nbsp;the&nbsp;normal&nbsp;assignment&nbsp;duties&nbsp;here...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;*this;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>This explicit test isn't always necessary.  For example, if you were to fix
+<a indepth="true" href="assignment-operators.html#[12.2]">the assignment operator in the previous FAQ<!--rawtext:[12.2]:rawtext--></a> to
+handle <a indepth="true" href="freestore-mgmt.html#[16.5]">exceptions thrown by <tt>new</tt><!--rawtext:[16.5]:rawtext--></a>
+and/or <a indepth="true" href="exceptions.html#[17.1]">exceptions thrown by the copy constructor<!--rawtext:[17.1]:rawtext--></a> of
+class <tt>Wilma</tt>, you might produce the following code.  Note that this code has
+the (pleasant) side effect of automatically handling self assignment as well:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;Fred&amp;&nbsp;Fred::operator=&nbsp;(const&nbsp;Fred&amp;&nbsp;f)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;This&nbsp;code&nbsp;gracefully&nbsp;(albeit&nbsp;implicitly)&nbsp;handles&nbsp;<a indepth="true" href="assignment-operators.html#[12.1]">self&nbsp;assignment<!--rawtext:[12.1]:rawtext--></a></em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wilma*&nbsp;tmp&nbsp;=&nbsp;new&nbsp;Wilma(*f.p_);&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;It&nbsp;would&nbsp;be&nbsp;OK&nbsp;if&nbsp;an&nbsp;<a indepth="true" href="exceptions.html">exception<!--rawtext:[17]:rawtext--></a>&nbsp;got&nbsp;thrown&nbsp;here</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delete&nbsp;p_;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p_&nbsp;=&nbsp;tmp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;*this;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>In cases like the previous example (where self assignment is harmless but
+inefficient), some programmers want to add "<tt>if&nbsp;(this&nbsp;==&nbsp;&amp;f)&nbsp;return&nbsp;*this;</tt>" to improve the efficiency of self assignment.  This is generally
+the wrong tradeoff.  If self assignment only occurs once in a thousand times,
+the <tt>if</tt> would waste cycles 99.9% of the time.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="dtors.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="operator-overloading.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="bottom"></a>
+<a href="mailto:cline@parashift.com"><img src="mbox.gif" alt="E-Mail" height="26" width="89">&nbsp;E-mail the author</a><br>
+[&nbsp;<a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html"><em>C++ FAQ Lite</em></a>
+|&nbsp;<a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html#table-of-contents">Table&nbsp;of&nbsp;contents</a>
+|&nbsp;<a indepth="true" href="subject-index.html">Subject&nbsp;index</a>
+|&nbsp;<a indepth="true" href="copy-permissions.html#[1.1]">About&nbsp;the&nbsp;author</a>
+|&nbsp;<a indepth="true" href="copy-permissions.html#[1.2]">©</a>
+|&nbsp;<a indepth="true" href="on-line-availability.html#[2.2]">Download&nbsp;your&nbsp;own&nbsp;copy</a>&nbsp;]<br>
+<small>Revised Feb 29, 2000</small>
+
+
+</p>
+
+</body></html>

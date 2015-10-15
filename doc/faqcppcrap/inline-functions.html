@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>[9] Inline functions, C++ FAQ Lite</title>
+<meta name="FILENAME" content="inline-functions.html">
+<meta name="ABSTRACT" content="[9] Inline functions, C++ FAQ Lite">
+<meta name="OWNER" content="cline@parashift.com">
+<meta name="AUTHOR" content="Marshall Cline, cline@parashift.com">
+
+<link rev="made" href="mailto:cline@parashift.com">
+</head>
+<body>
+<h1><a name="top"></a>[9] Inline functions<br>
+<small><small>(Part of <a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html"><em>C++ FAQ Lite</em></a>, <a indepth="true" href="copy-permissions.html#[1.2]">Copyright&nbsp;© 1991-2000</a>, <a href="http://marshall-cline.att.net/" target="OutsideTheFAQ">Marshall Cline</a>, <a href="mailto:cline@parashift.com">cline@parashift.com</a>)</small></small></h1>
+<hr>
+<h3>FAQs in section [9]:</h3>
+<ul>
+<li><a indepth="true" href="inline-functions.html#[9.1]">[9.1] What's the deal with <tt>inline</tt> functions?</a></li>
+<li><a indepth="true" href="inline-functions.html#[9.2]">[9.2] How can <tt>inline</tt> functions help with the tradeoff of
+safety <i>vs.</i> speed?</a></li>
+<li><a indepth="true" href="inline-functions.html#[9.3]">[9.3] Why should I use <tt>inline</tt> functions?  Why not just use
+plain old <tt>#define</tt> macros?</a> <img src="updated.gif" alt="UPDATED!"></li>
+<li><a indepth="true" href="inline-functions.html#[9.4]">[9.4] How do you tell the compiler to make a non-member
+function <tt>inline</tt>?</a></li>
+<li><a indepth="true" href="inline-functions.html#[9.5]">[9.5] How do you tell the compiler to make a member function
+<tt>inline</tt>?</a></li>
+<li><a indepth="true" href="inline-functions.html#[9.6]">[9.6] Is there another way to tell the compiler to make a
+member function <tt>inline</tt>?</a></li>
+<li><a indepth="true" href="inline-functions.html#[9.7]">[9.7] Are <tt>inline</tt> functions guaranteed to make your performance
+better?</a></li>
+</ul>
+<p></p><hr>
+<p><a name="[9.1]"></a>
+</p><h3>[9.1] What's the deal with <tt>inline</tt> functions?</h3>
+<p>An <tt>inline</tt> function is a function whose code gets inserted into the caller's
+code stream.  Like a <tt>#define</tt> macro, <tt>inline</tt> functions improve
+performance by avoiding the overhead of the call itself and (especially!) by
+the compiler being able to optimize <em>through</em> the call ("procedural
+integration").
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="references.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="ctors.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[9.2]"></a>
+</p><h3>[9.2] How can <tt>inline</tt> functions help with the tradeoff of
+safety <i>vs.</i> speed?</h3>
+<p>In straight C, you can achieve "encapsulated <tt>struct</tt>s" by putting a <tt>void*</tt> in
+a <tt>struct</tt>, in which case the <tt>void*</tt> points to the real data that is unknown
+to users of the <tt>struct</tt>.  Therefore users of the <tt>struct</tt> don't know how to
+interpret the stuff pointed to by the <tt>void*</tt>, but the access functions cast
+the <tt>void*</tt> to the approprate hidden type.  This gives a form of encapsulation.
+</p><p>Unfortunately it forfeits type safety, and also imposes a function call to
+access even trivial fields of the <tt>struct</tt> (if you allowed direct access to the
+<tt>struct</tt>'s fields, anyone and everyone would be able to get direct access since
+they would of necessity know how to interpret the stuff pointed to by the
+<tt>void*</tt>; this would make it difficult to change the underlying data structure).
+</p><p>Function call overhead is small, but can add up.  C++ classes allow function
+calls to be expanded <tt>inline</tt>.  This lets you have the safety of encapsulation
+along with the speed of direct access.  Furthermore the parameter types of
+these <tt>inline</tt> functions are checked by the compiler, an improvement over C's
+<tt>#define</tt> macros.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="references.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="ctors.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[9.3]"></a>
+</p><h3>[9.3] Why should I use <tt>inline</tt> functions?  Why not just use
+plain old <tt>#define</tt> macros? <img src="updated.gif" alt="UPDATED!"></h3>
+<small><em>[Recently added cross references to other evilness of macros (on 3/00).  <a indepth="true" href="ctors.html#[10.7]">Click here to go to the next FAQ in the "chain" of recent changes<!--rawtext:[10.7]:rawtext--></a>.]</em></small>
+<p>Because <tt>#define</tt> macros are <a indepth="true" href="inline-functions.html#[9.3]">evil<!--rawtext:[9.3]:rawtext--></a>,
+<a indepth="true" href="misc-technical-issues.html#[34.1]">evil<!--rawtext:[34.1]:rawtext--></a>, <a indepth="true" href="misc-technical-issues.html#[34.2]">evil<!--rawtext:[34.2]:rawtext--></a>,
+<a indepth="true" href="misc-technical-issues.html#[34.3]">evil<!--rawtext:[34.3]:rawtext--></a>.
+</p><p>Unlike <tt>#define</tt> macros, <tt>inline</tt> functions avoid infamous macro errors
+since <tt>inline</tt> functions always evaluate every argument exactly once.
+In other words, invoking an <tt>inline</tt> function is semantically just like
+invoking a regular function, only faster:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;A&nbsp;macro&nbsp;that&nbsp;returns&nbsp;the&nbsp;absolute&nbsp;value&nbsp;of&nbsp;<tt>i</tt></em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;#define&nbsp;unsafe(i)&nbsp;&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(&nbsp;(i)&nbsp;&gt;=&nbsp;0&nbsp;?&nbsp;(i)&nbsp;:&nbsp;-(i)&nbsp;)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;An&nbsp;<tt>inline</tt>&nbsp;function&nbsp;that&nbsp;returns&nbsp;the&nbsp;absolute&nbsp;value&nbsp;of&nbsp;<tt>i</tt></em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;inline<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;safe(int&nbsp;i)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;i&nbsp;&gt;=&nbsp;0&nbsp;?&nbsp;i&nbsp;:&nbsp;-i;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;f();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;userCode(int&nbsp;x)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;ans;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ans&nbsp;=&nbsp;unsafe(x++);&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Error!&nbsp;<tt>x</tt>&nbsp;is&nbsp;incremented&nbsp;twice</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ans&nbsp;=&nbsp;unsafe(f());&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Danger!&nbsp;<tt>f()</tt>&nbsp;is&nbsp;called&nbsp;twice</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ans&nbsp;=&nbsp;safe(x++);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Correct!&nbsp;<tt>x</tt>&nbsp;is&nbsp;incremented&nbsp;once</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ans&nbsp;=&nbsp;safe(f());&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Correct!&nbsp;<tt>f()</tt>&nbsp;is&nbsp;called&nbsp;once</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>Also unlike macros, argument types are checked, and necessary conversions are
+performed correctly.
+</p><p>Macros are bad for your health; don't use them unless you have to.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="references.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="ctors.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[9.4]"></a>
+</p><h3>[9.4] How do you tell the compiler to make a non-member
+function <tt>inline</tt>?</h3>
+<p>When you declare an <tt>inline</tt> function, it looks just like a normal function:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;f(int&nbsp;i,&nbsp;char&nbsp;c);
+</tt>
+</p><p>But when you define an <tt>inline</tt> function, you prepend the function's definition
+with the keyword <tt>inline</tt>, and you put the definition into a header file:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;inline<br>
+&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;f(int&nbsp;i,&nbsp;char&nbsp;c)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>Note: It's imperative that the function's definition (the part between the
+<tt>{...}</tt>) be placed in a header file, unless the function is used only in
+a single .cpp file.  In particular, if you put the <tt>inline</tt> function's
+definition into a <tt>.cpp</tt> file and you call it from some other
+<tt>.cpp</tt> file, you'll get an "unresolved external" error from the linker.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="references.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="ctors.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[9.5]"></a>
+</p><h3>[9.5] How do you tell the compiler to make a member function
+<tt>inline</tt>?</h3>
+<p>When you declare an <tt>inline</tt> member function, it looks just like a normal
+member function:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Fred&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;f(int&nbsp;i,&nbsp;char&nbsp;c);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;};
+</tt>
+</p><p>But when you define an <tt>inline</tt> member function, you prepend the member
+function's definition with the keyword <tt>inline</tt>, and you put the definition
+into a header file:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;inline<br>
+&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;Fred::f(int&nbsp;i,&nbsp;char&nbsp;c)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>It's usually imperative that the function's definition (the part between the
+<tt>{...}</tt>) be placed in a header file.  If you put the <tt>inline</tt> function's
+definition into a <tt>.cpp</tt> file, and if it is called from some other
+<tt>.cpp</tt> file, you'll get an "unresolved external" error from the linker.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="references.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="ctors.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[9.6]"></a>
+</p><h3>[9.6] Is there another way to tell the compiler to make a
+member function <tt>inline</tt>?</h3>
+<p>Yep: define the member function in the class body itself:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Fred&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;f(int&nbsp;i,&nbsp;char&nbsp;c)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;};
+</tt>
+</p><p>Although this is easier on the person who writes the class, it's harder on
+all the readers since it mixes "what" a class does with "how" it does them.
+Because of this mixture, we normally prefer to define member functions
+<a indepth="true" href="inline-functions.html#[9.5]">outside the class body with the <tt>inline</tt>
+keyword<!--rawtext:[9.5]:rawtext--></a>.  The insight that makes sense of this: in a
+reuse-oriented world, there will usually be many people who use your class,
+but there is only one person who builds it (yourself); therefore you should do
+things that favor the many rather than the few.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="references.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="ctors.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[9.7]"></a>
+</p><h3>[9.7] Are <tt>inline</tt> functions guaranteed to make your performance
+better?</h3>
+<p>Nope.
+</p><p>Beware that overuse of <tt>inline</tt> functions can cause code bloat, which can in
+turn have a negative performance impact in paging environments.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="references.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="ctors.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="bottom"></a>
+<a href="mailto:cline@parashift.com"><img src="mbox.gif" alt="E-Mail" height="26" width="89">&nbsp;E-mail the author</a><br>
+[&nbsp;<a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html"><em>C++ FAQ Lite</em></a>
+|&nbsp;<a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html#table-of-contents">Table&nbsp;of&nbsp;contents</a>
+|&nbsp;<a indepth="true" href="subject-index.html">Subject&nbsp;index</a>
+|&nbsp;<a indepth="true" href="copy-permissions.html#[1.1]">About&nbsp;the&nbsp;author</a>
+|&nbsp;<a indepth="true" href="copy-permissions.html#[1.2]">©</a>
+|&nbsp;<a indepth="true" href="on-line-availability.html#[2.2]">Download&nbsp;your&nbsp;own&nbsp;copy</a>&nbsp;]<br>
+<small>Revised Feb 29, 2000</small>
+
+
+</p>
+
+</body></html>

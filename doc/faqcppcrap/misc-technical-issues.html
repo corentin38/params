@@ -1,0 +1,547 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>[34] Miscellaneous technical issues, C++ FAQ Lite</title>
+<meta name="FILENAME" content="misc-technical-issues.html">
+<meta name="ABSTRACT" content="[34] Miscellaneous technical issues, C++ FAQ Lite">
+<meta name="OWNER" content="cline@parashift.com">
+<meta name="AUTHOR" content="Marshall Cline, cline@parashift.com">
+
+<link rev="made" href="mailto:cline@parashift.com">
+</head>
+<body>
+<h1><a name="top"></a>[34] Miscellaneous technical issues<br>
+<small><small>(Part of <a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html"><em>C++ FAQ Lite</em></a>, <a indepth="true" href="copy-permissions.html#[1.2]">Copyright&nbsp;© 1991-2000</a>, <a href="http://marshall-cline.att.net/" target="OutsideTheFAQ">Marshall Cline</a>, <a href="mailto:cline@parashift.com">cline@parashift.com</a>)</small></small></h1>
+<hr>
+<h3>FAQs in section [34]:</h3>
+<ul>
+<li><a indepth="true" href="misc-technical-issues.html#[34.1]">[34.1] What should be done with macros that contain <tt>if</tt>?</a> <img src="new.gif" alt="NEW!"></li>
+<li><a indepth="true" href="misc-technical-issues.html#[34.2]">[34.2] What should be done with macros that have multiple
+lines?</a> <img src="new.gif" alt="NEW!"></li>
+<li><a indepth="true" href="misc-technical-issues.html#[34.3]">[34.3] What should be done with macros that need to
+paste two tokens together?</a> <img src="new.gif" alt="NEW!"></li>
+<li><a indepth="true" href="misc-technical-issues.html#[34.4]">[34.4] Why can't the compiler find my header file in
+<tt>#include&nbsp;"c:\test.hpp"</tt>&nbsp;?</a></li>
+<li><a indepth="true" href="misc-technical-issues.html#[34.5]">[34.5] Does C++ have new scoping rules for <tt>for</tt> loops?</a></li>
+<li><a indepth="true" href="misc-technical-issues.html#[34.6]">[34.6] Why can't I overload a function by its return
+type?</a></li>
+<li><a indepth="true" href="misc-technical-issues.html#[34.7]">[34.7] What is "persistence"?  What is a "persistent object"?</a></li>
+<li><a indepth="true" href="misc-technical-issues.html#[34.8]">[34.8] Why is floating point so inaccurate?  Why doesn't this
+print 0.43?</a></li>
+<li><a indepth="true" href="misc-technical-issues.html#[34.9]">[34.9] How can I create two classes that both know about each other?</a></li>
+<li><a indepth="true" href="misc-technical-issues.html#[34.10]">[34.10] What special considerations are needed when forward
+declarations are used with member objects?</a></li>
+<li><a indepth="true" href="misc-technical-issues.html#[34.11]">[34.11] What special considerations are needed when forward
+declarations are used with inline functions?</a></li>
+<li><a indepth="true" href="misc-technical-issues.html#[34.12]">[34.12] Why can't I put a forward-declared class in a <tt>vector&lt;&gt;</tt>?</a></li>
+</ul>
+<p></p><hr>
+<p><a name="[34.1]"></a>
+</p><h3>[34.1] What should be done with macros that contain <tt>if</tt>? <img src="new.gif" alt="NEW!"></h3>
+<small><em>[Recently created (on 3/00).  <a indepth="true" href="misc-technical-issues.html#[34.2]">Click here to go to the next FAQ in the "chain" of recent changes<!--rawtext:[34.2]:rawtext--></a>.]</em></small>
+<p>First, the best thing to do is get rid of the macro if at all possible.  In
+fact, get rid of <em>all</em> macros: they're <a indepth="true" href="inline-functions.html#[9.3]">evil<!--rawtext:[9.3]:rawtext--></a>,
+<a indepth="true" href="misc-technical-issues.html#[34.1]">evil<!--rawtext:[34.1]:rawtext--></a>, <a indepth="true" href="misc-technical-issues.html#[34.2]">evil<!--rawtext:[34.2]:rawtext--></a>,
+<a indepth="true" href="misc-technical-issues.html#[34.3]">evil<!--rawtext:[34.3]:rawtext--></a>, regardless of whether the contain
+an <tt>if</tt> (but they're especially evil if they contain an <tt>if</tt>).
+</p><p>But if you can't (or don't want to) kill the macro that contains an <tt>if</tt>,
+here's how to make it less evil:
+</p><p>Suppose the macro looks like this:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;#define&nbsp;MYMACRO(a,b)&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(xyzzy)&nbsp;asdf()
+</tt>
+</p><p>This will cause big problems if someone uses that macro in an <tt>if</tt> statement:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(whatever)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MYMACRO(foo,bar);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;baz;
+</tt>
+</p><p>The problem is that the <tt>else&nbsp;baz</tt> nests with the wrong <tt>if</tt>: the compiler sees this:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(whatever)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(xyzzy)&nbsp;asdf();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else&nbsp;baz;
+</tt>
+</p><p>Obviously that's a bug.
+</p><p>The easy solution is to require <tt>{</tt>...<tt>}</tt> everywhere, but there's
+another solution that I prefer even if there's a coding standard that requires
+<tt>{</tt>...<tt>}</tt> everywhere (just in case someone somewhere forgets): add
+a balancing <tt>else</tt> to the macro definition:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;#define&nbsp;MYMACRO(a,b)&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(xyzzy)&nbsp;asdf();&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else
+</tt>
+</p><p>Now the compiler will see a balanced set of <tt>if</tt>s and <tt>else</tt>s:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(whatever)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(xyzzy)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;asdf();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;&nbsp;&nbsp;</tt><em>//&nbsp;that's&nbsp;an&nbsp;empty&nbsp;statement</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;baz;
+</tt>
+</p><p>Like I said, I personally do the above even when the coding standard calls for
+<tt>{</tt>...<tt>}</tt> in all the <tt>if</tt>s.  Call me paranoid, but I sleep better
+at night and my code has fewer bugs.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="compiler-dependencies.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="misc-environmental-issues.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[34.2]"></a>
+</p><h3>[34.2] What should be done with macros that have multiple
+lines? <img src="new.gif" alt="NEW!"></h3>
+<small><em>[Recently created (on 3/00).  <a indepth="true" href="misc-technical-issues.html#[34.3]">Click here to go to the next FAQ in the "chain" of recent changes<!--rawtext:[34.3]:rawtext--></a>.]</em></small>
+<p>Answer: Choke, gag, cough.  Macros are <a indepth="true" href="inline-functions.html#[9.3]">evil<!--rawtext:[9.3]:rawtext--></a>,
+<a indepth="true" href="misc-technical-issues.html#[34.1]">evil<!--rawtext:[34.1]:rawtext--></a>, <a indepth="true" href="misc-technical-issues.html#[34.2]">evil<!--rawtext:[34.2]:rawtext--></a>,
+<a indepth="true" href="misc-technical-issues.html#[34.3]">evil<!--rawtext:[34.3]:rawtext--></a>.  Kill them <em>all!!</em>
+</p><p>But if you can't (or don't want to) kill them, here's how to make them less
+evil:
+</p><p>Suppose the macro looks like this:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;#define&nbsp;MYMACRO(a,b)&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statement1;&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statement2;&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statementN;
+</tt>
+</p><p>This can cause problems if someone uses the macro in a context that demands a
+single statement.  E.g.,
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;while&nbsp;(whatever)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MYMACRO(foo,&nbsp;bar);
+</tt>
+</p><p>The naive solution is to wrap the statements inside "{ ... }", such as this:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;#define&nbsp;MYMACRO(a,b)&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statement1;&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statement2;&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statementN;&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>But this will cause compile-time errors with things like the following:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(whatever)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MYMACRO(foo,&nbsp;bar);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;baz;
+</tt>
+</p><p>since the compiler will see a <tt>}&nbsp;;&nbsp;else</tt> which is illegal:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(whatever)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statement1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statement2;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statementN;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;};&nbsp;&nbsp;</tt><em>//&nbsp;ERROR:&nbsp;<tt>{&nbsp;}</tt>&nbsp;cannot&nbsp;have&nbsp;a&nbsp;<tt>;</tt>&nbsp;before&nbsp;an&nbsp;<tt>else</tt></em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;baz;
+</tt>
+</p><p>The usual solution in C was to wrap the statements inside a <tt>do&nbsp;{</tt>
+<em>&lt;statements go here&gt;</em> <tt>}&nbsp;while&nbsp;(0)</tt>, since that will execute the
+<em>&lt;statements go here&gt;</em> part exactly once.  E.g., the macro might look
+like this:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;#define&nbsp;MYMACRO(a,&nbsp;b)&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;do&nbsp;{&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statement1;&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statement2;&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statementN;&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;while&nbsp;(0)
+</tt>
+</p><p>Note that there is no ";" at the end of the macro definition.  The ";" gets
+added by the user of the macro, such as the following:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(whatever)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MYMACRO(foo,&nbsp;bar);&nbsp;&nbsp;</tt><em>//&nbsp;The&nbsp;";"&nbsp;is&nbsp;added&nbsp;here</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;baz;
+</tt>
+</p><p>This will expand to the following (note that the ";" added by the user goes
+after (and completes) the "} while (0)" part):
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(whatever)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;do&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statement1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statement2;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statementN;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;while&nbsp;(0);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;baz;
+</tt>
+</p><p>The only problem with this is that it <em>looks</em> like a loop, and some C++
+compilers refuse to "inline expand" any method that has a loop in it.  So in
+C++ the best solution is to wrap the statements in an <tt>if&nbsp;(1)&nbsp;{</tt>
+<em>&lt;statements go here&gt;</em> <tt>}&nbsp;else</tt> construct (note that the <tt>else</tt> is
+dangling, just like the situation described in the previous FAQ):
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;#define&nbsp;MYMACRO(a,&nbsp;b)&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(1)&nbsp;{&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statement1;&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statement2;&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statementN;&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else
+</tt>
+</p><p>Now the code will expand into this (note the balanced set of <tt>if</tt>s and <tt>else</tt>s):
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(whatever)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(1)&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statement1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statement2;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statementN;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;&nbsp;&nbsp;</tt><em>//&nbsp;that's&nbsp;a&nbsp;null&nbsp;statement</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;baz;
+</tt>
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="compiler-dependencies.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="misc-environmental-issues.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[34.3]"></a>
+</p><h3>[34.3] What should be done with macros that need to
+paste two tokens together? <img src="new.gif" alt="NEW!"></h3>
+<small><em>[Recently created (on 3/00).  <a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html#chain-of-changed-faqs">Click here to go back to the beginning of the "chain" of recent changes</a>.]</em></small>
+<p>Groan.  I really <em>hate</em> macros.  Yes they're useful sometimes, and yes I
+use them.  But I always wash my hands afterwards.  Twice.  Macros are
+<a indepth="true" href="inline-functions.html#[9.3]">evil<!--rawtext:[9.3]:rawtext--></a>, <a indepth="true" href="misc-technical-issues.html#[34.1]">evil<!--rawtext:[34.1]:rawtext--></a>,
+<a indepth="true" href="misc-technical-issues.html#[34.2]">evil<!--rawtext:[34.2]:rawtext--></a>, <a indepth="true" href="misc-technical-issues.html#[34.3]">evil<!--rawtext:[34.3]:rawtext--></a>.
+</p><p>Okay, here we go again, desperately trying to make an inherently evil thing a
+little less evil.
+</p><p>First, the basic approach is use the ISO/ANSI-C and ISO/ANSI-C++ "token
+pasting" feature: <tt>##</tt>.  On the surface this would look like the
+following:
+</p><p>Suppose you have a macro called "MYMACRO", and suppose you're passing a token
+as the parameter of that macro, and suppose you want to concatenate that token
+with the token "Tmp" to create a variable name.  For example, the use of
+<tt>MYMACRO(Foo)</tt> would create a variable named "FooTmp" and the use of
+<tt>MYMACRO(Bar)</tt> would create a variable named "BarTmp".  In this case the
+naive approach would be to say this:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;#define&nbsp;MYMACRO(a)&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>/*...*/</em><tt>&nbsp;a&nbsp;##&nbsp;Tmp&nbsp;</tt><em>/*...*/</em><tt>
+</tt>
+</p><p>However (and I don't remember whether the following is a workaround for some
+buggy compilers or whether it's a rule in the language, but regardless it's a
+good idea), you are better off with a double layer of indirection when you use
+<tt>##</tt>.  Basically you ought to create a special macro for "token pasting"
+such as this:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;#define&nbsp;name2(a,b)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name2_hidden(a,b)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;#define&nbsp;name2_hidden(a,b)&nbsp;&nbsp;a&nbsp;##&nbsp;b
+</tt>
+</p><p>Then replace your use of <tt>a&nbsp;##&nbsp;Tmp</tt> with <tt>name2(a,Tmp)</tt>:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;#define&nbsp;MYMACRO(a)&nbsp;\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>/*...*/</em><tt>&nbsp;name2(a,Tmp)&nbsp;</tt><em>/*...*/</em><tt>
+</tt>
+</p><p>And if you have a three-way concatenation to do (e.g., to paste three tokens
+together), you'd create a <tt>name3()</tt> macro like this:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;#define&nbsp;name3(a,b,c)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name3_hidden(a,b,c)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;#define&nbsp;name3_hidden(a,b,c)&nbsp;&nbsp;a&nbsp;##&nbsp;b&nbsp;##&nbsp;c
+</tt>
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="compiler-dependencies.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="misc-environmental-issues.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[34.4]"></a>
+</p><h3>[34.4] Why can't the compiler find my header file in
+<tt>#include&nbsp;"c:\test.hpp"</tt>&nbsp;?</h3>
+<p>Because <tt>"\t"</tt> is a tab character.
+</p><p>You should use forward slashes (<tt>"/"</tt>) rather than backslashes
+(<tt>"\"</tt>) in your <tt>#include</tt> filenames, even on an operating system that
+uses backslashes such as DOS, Windows, OS/2, etc.  For example:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;#if&nbsp;1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#include&nbsp;"/version/next/alpha/beta/test.hpp"&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;RIGHT!</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;#else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#include&nbsp;"\version\next\alpha\beta\test.hpp"&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;WRONG!</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;#endif
+</tt>
+</p><p>Note that <a indepth="true" href="input-output.html#[15.10]">you should use forward slashes (<tt>"/"</tt>) on all your
+filenames<!--rawtext:[15.10]:rawtext--></a>, not just on your <tt>#include</tt> files.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="compiler-dependencies.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="misc-environmental-issues.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[34.5]"></a>
+</p><h3>[34.5] Does C++ have new scoping rules for <tt>for</tt> loops?</h3>
+<p>Yep.
+</p><p>The following code used to be legal, but not any more, since <tt>i</tt>'s scope is now
+inside the <tt>for</tt> loop only:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;(int&nbsp;i&nbsp;=&nbsp;0;&nbsp;i&nbsp;&lt;&nbsp;10;&nbsp;++i)&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(&nbsp;</tt><em>/*&nbsp;something&nbsp;weird&nbsp;*/</em><tt>&nbsp;)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(i&nbsp;!=&nbsp;10)&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;We&nbsp;exited&nbsp;the&nbsp;loop&nbsp;early;&nbsp;handle&nbsp;this&nbsp;situation&nbsp;separately</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>Unless you use a <tt>for</tt> loop variable after the <tt>for</tt> loop, the new scoping rule
+won't break your code.  If it does break your code, in most cases the compiler
+will give you a compile-time error message such as "Variable <tt>i</tt> is not in
+scope".
+</p><p>Unfortunately it is possible that this new rule will silently cause your code
+to do the wrong thing.  For example, if you have a global variable <tt>i</tt>, the
+above code <tt>if&nbsp;(i&nbsp;!=&nbsp;10)</tt> silently change in meaning from the <tt>for</tt> loop
+variable <tt>i</tt> under the old rule to the global variable <tt>i</tt> under the new rule.
+This is not good.  If you're concerned, you should check with your compiler to
+see if it has some option that forces it to use the old rules with your old
+code.
+</p><p>Note: You should avoid having the same variable name in nested scopes, such as
+a global <tt>i</tt> and a local <tt>i</tt>.  In fact, you should avoid globals althogether
+whenever you can.  If you abided by these coding standards in your old code,
+you won't be hurt by the new scoping rules for <tt>for</tt> loop variables.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="compiler-dependencies.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="misc-environmental-issues.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[34.6]"></a>
+</p><h3>[34.6] Why can't I overload a function by its return
+type?</h3>
+<p>If you declare both <tt>char&nbsp;f()</tt> and <tt>float&nbsp;f()</tt>, the compiler gives
+you an error message, since calling simply <tt>f()</tt> would be ambiguous.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="compiler-dependencies.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="misc-environmental-issues.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[34.7]"></a>
+</p><h3>[34.7] What is "persistence"?  What is a "persistent object"?</h3>
+<p>A persistent object can live after the program which created it has stopped.
+Persistent objects can even outlive different versions of the creating program,
+can outlive the disk system, the operating system, or even the hardware on
+which the OS was running when they were created.
+</p><p>The challenge with persistent objects is to effectively store their member
+function code out on secondary storage along with their data bits (and the data
+bits and member function code of all member objects, and of all their member
+objects and base classes, etc).  This is non-trivial when you have to do it
+yourself.  In C++, you have to do it yourself.  C++/OO databases can help hide
+the mechanism for all this.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="compiler-dependencies.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="misc-environmental-issues.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[34.8]"></a>
+</p><h3>[34.8] Why is floating point so inaccurate?  Why doesn't this
+print 0.43?</h3>
+<p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;#include&nbsp;&lt;iostream.h&gt;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;main()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;a&nbsp;=&nbsp;1000.43;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;b&nbsp;=&nbsp;1000.0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout&nbsp;&lt;&lt;&nbsp;a&nbsp;-&nbsp;b&nbsp;&lt;&lt;&nbsp;'\n';<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;
+</tt>
+</p><p>(On one C++ implementation, this prints 0.429993)
+</p><p>Disclaimer: Frustration with rounding/truncation/approximation isn't really a
+C++ issue; it's a computer science issue.  However, people keep asking about
+it on <a href="news:comp.lang.c++"><tt>comp.lang.c++</tt></a>, so what follows is a nominal answer.
+</p><p>Answer: Floating point is an approximation.  The IEEE standard for 32 bit float
+supports 1 bit of sign, 8 bits of exponent, and 23 bits of mantissa.  Since a
+normalized binary-point mantissa always has the form 1.xxxxx... the leading 1
+is dropped and you get effectively 24 bits of mantissa.  The number 1000.43
+(and many, many others) is not exactly representable in float or double format.
+1000.43 is actually represented as the following bitpattern (the "<tt>s</tt>"
+shows the position of the sign bit, the "<tt>e</tt>"s show the positions of the
+exponent bits, and the "<tt>m</tt>"s show the positions of the mantissa bits):
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;seeeeeeeemmmmmmmmmmmmmmmmmmmmmmm&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;01000100011110100001101110000101&nbsp;
+</tt>
+</p><p>The shifted mantissa is 1111101000.01101110000101 or 1000 + 7045/16384.  The
+fractional part is 0.429992675781.  With 24 bits of mantissa you only get
+about 1 part in 16M of precision for float.  The <tt>double</tt> type provides more
+precision (53 bits of mantissa).
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="compiler-dependencies.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="misc-environmental-issues.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[34.9]"></a>
+</p><h3>[34.9] How can I create two classes that both know about each other?</h3>
+<p>Use a forward declaration.
+</p><p>Sometimes you must create two classes that use each other.  This is called a
+circular dependency.  For example:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Fred&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Barney*&nbsp;foo();&nbsp;&nbsp;</tt><em>//&nbsp;Error:&nbsp;Unknown&nbsp;symbol&nbsp;'Barney'</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;};<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Barney&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fred*&nbsp;bar();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;};
+</tt>
+</p><p>The <tt>Fred</tt> class has a member function that returns a <tt>Barney*</tt>,
+and the <tt>Barney</tt> class has a member function that returns a <tt>Fred</tt>.
+You may inform the compiler about the existence of a class or structure by
+using a "forward declaration":
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Barney;
+</tt>
+</p><p>This line must appear <em>before</em> the declaration of class <tt>Fred</tt>.  It
+simply informs the compiler that the name <tt>Barney</tt> is a class, and
+further it is a promise to the compiler that you will eventually supply a
+complete definition of that class.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="compiler-dependencies.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="misc-environmental-issues.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[34.10]"></a>
+</p><h3>[34.10] What special considerations are needed when forward
+declarations are used with member objects?</h3>
+<p>The order of class declarations is critical.
+</p><p>The compiler will give you a compile-time error if the first class contains an
+object (as opposed to a pointer to an object) of the second class.  For example,
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Fred;&nbsp;&nbsp;</tt><em>//&nbsp;Okay:&nbsp;<a indepth="true" href="misc-technical-issues.html#[34.9]">forward&nbsp;declaration<!--rawtext:[34.9]:rawtext--></a></em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Barney&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fred&nbsp;x;&nbsp;&nbsp;</tt><em>//&nbsp;Error:&nbsp;The&nbsp;declaration&nbsp;of&nbsp;<tt>Fred</tt>&nbsp;is&nbsp;incomplete</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;};<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Fred&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Barney*&nbsp;y;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;};
+</tt>
+</p><p>One way to solve this problem is to reverse order of the classes so the "used"
+class is defined before the class that uses it:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Barney;&nbsp;&nbsp;</tt><em>//&nbsp;Okay:&nbsp;<a indepth="true" href="misc-technical-issues.html#[34.9]">forward&nbsp;declaration<!--rawtext:[34.9]:rawtext--></a></em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Fred&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Barney*&nbsp;y;&nbsp;&nbsp;</tt><em>//&nbsp;Okay:&nbsp;the&nbsp;first&nbsp;can&nbsp;point&nbsp;to&nbsp;an&nbsp;object&nbsp;of&nbsp;the&nbsp;second</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;};<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Barney&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fred&nbsp;x;&nbsp;&nbsp;</tt><em>//&nbsp;Okay:&nbsp;the&nbsp;second&nbsp;can&nbsp;have&nbsp;an&nbsp;object&nbsp;of&nbsp;the&nbsp;first</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;};
+</tt>
+</p><p>Note that it is never legal for each class to fully contain an object of the
+other class since that would imply infinitely large objects.  In other words,
+if an instance of <tt>Fred</tt> contains a <tt>Barney</tt> (as opposed to a
+<tt>Barney*</tt>), and a <tt>Barney</tt> contains a <tt>Fred</tt> (as opposed to a
+<tt>Fred*</tt>), the compiler will give you an error.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="compiler-dependencies.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="misc-environmental-issues.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[34.11]"></a>
+</p><h3>[34.11] What special considerations are needed when forward
+declarations are used with inline functions?</h3>
+<p>The order of class declarations is critical.
+</p><p>The compiler will give you a compile-time error if the first class contains an
+inline function that invokes a member function of the second class.  For
+example,
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Fred;&nbsp;&nbsp;</tt><em>//&nbsp;Okay:&nbsp;<a indepth="true" href="misc-technical-issues.html#[34.9]">forward&nbsp;declaration<!--rawtext:[34.9]:rawtext--></a></em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Barney&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;method()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x-&gt;yabbaDabbaDo();&nbsp;&nbsp;</tt><em>//&nbsp;Error:&nbsp;<tt>Fred</tt>&nbsp;used&nbsp;before&nbsp;it&nbsp;was&nbsp;defined</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;private:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fred*&nbsp;x;&nbsp;&nbsp;</tt><em>//&nbsp;Okay:&nbsp;the&nbsp;first&nbsp;can&nbsp;point&nbsp;to&nbsp;an&nbsp;object&nbsp;of&nbsp;the&nbsp;second</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;};<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Fred&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;yabbaDabbaDo();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;private:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Barney*&nbsp;y;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;};
+</tt>
+</p><p>One way to solve this problem is to move the offending member function into the
+<tt>Barney.cpp</tt> file as a non-<tt>inline</tt> member function.  Another way
+to solve this problem is to reverse order of the classes so the "used" class is
+defined before the class that uses it:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Barney;&nbsp;&nbsp;</tt><em>//&nbsp;Okay:&nbsp;<a indepth="true" href="misc-technical-issues.html#[34.9]">forward&nbsp;declaration<!--rawtext:[34.9]:rawtext--></a></em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Fred&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;yabbaDabbaDo();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;private:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Barney*&nbsp;y;&nbsp;&nbsp;</tt><em>//&nbsp;Okay:&nbsp;the&nbsp;first&nbsp;can&nbsp;point&nbsp;to&nbsp;an&nbsp;object&nbsp;of&nbsp;the&nbsp;second</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;};<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Barney&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;method()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x-&gt;yabbaDabbaDo();&nbsp;&nbsp;</tt><em>//&nbsp;Okay:&nbsp;<tt>Fred</tt>&nbsp;is&nbsp;fully&nbsp;defined&nbsp;at&nbsp;this&nbsp;point</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;private:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fred*&nbsp;x;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;};
+</tt>
+</p><p>Just remember this: Whenever you use <a indepth="true" href="misc-technical-issues.html#[34.9]">forward
+declaration<!--rawtext:[34.9]:rawtext--></a>, you can use only that symbol; you may not do anything that
+requires knowledge of the forward-declared class.  Specifically you may not
+access any members of the second class.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="compiler-dependencies.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="misc-environmental-issues.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[34.12]"></a>
+</p><h3>[34.12] Why can't I put a forward-declared class in a <tt>vector&lt;&gt;</tt>?</h3>
+<p>Because the <tt>vector&lt;&gt;</tt> template needs to know the <tt>sizeof()</tt> its
+contained elements, plus the <tt>vector&lt;&gt;</tt> probably accesses members of the
+contained elements (such as the copy constructor, the destructor, etc.).  For
+example,
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Fred;&nbsp;&nbsp;</tt><em>//&nbsp;Okay:&nbsp;<a indepth="true" href="misc-technical-issues.html#[34.9]">forward&nbsp;declaration<!--rawtext:[34.9]:rawtext--></a></em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Barney&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vector&lt;Fred&gt;&nbsp;x;&nbsp;&nbsp;</tt><em>//&nbsp;Error:&nbsp;the&nbsp;declaration&nbsp;of&nbsp;<tt>Fred</tt>&nbsp;is&nbsp;incomplete</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;};<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Fred&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Barney*&nbsp;y;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;};
+</tt>
+</p><p>One solution to this problem is to change <tt>Barney</tt> so it uses a
+<tt>vector&lt;&gt;</tt> of <tt>Fred</tt> <em>pointers</em> rather than a
+<tt>vector&lt;&gt;</tt> of <tt>Fred</tt> <em>objects</em>:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Fred;&nbsp;&nbsp;</tt><em>//&nbsp;Okay:&nbsp;<a indepth="true" href="misc-technical-issues.html#[34.9]">forward&nbsp;declaration<!--rawtext:[34.9]:rawtext--></a></em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Barney&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vector&lt;Fred*&gt;&nbsp;x;&nbsp;&nbsp;</tt><em>//&nbsp;Okay:&nbsp;<tt>Barney</tt>&nbsp;can&nbsp;use&nbsp;<tt>Fred</tt>&nbsp;pointers</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;};<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Fred&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Barney*&nbsp;y;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;};
+</tt>
+</p><p>Another solution to this problem is to reverse the order of the classes so
+<tt>Fred</tt> is defined before <tt>Barney</tt>:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Barney;&nbsp;&nbsp;</tt><em>//&nbsp;Okay:&nbsp;<a indepth="true" href="misc-technical-issues.html#[34.9]">forward&nbsp;declaration<!--rawtext:[34.9]:rawtext--></a></em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Fred&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Barney*&nbsp;y;&nbsp;&nbsp;</tt><em>//&nbsp;Okay:&nbsp;the&nbsp;first&nbsp;can&nbsp;point&nbsp;to&nbsp;an&nbsp;object&nbsp;of&nbsp;the&nbsp;second</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;};<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Barney&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vector&lt;Fred&gt;&nbsp;x;&nbsp;&nbsp;</tt><em>//&nbsp;Okay:&nbsp;<tt>Fred</tt>&nbsp;is&nbsp;fully&nbsp;defined&nbsp;at&nbsp;this&nbsp;point</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;};
+</tt>
+</p><p>Just remember this: Whenever you use a class as a template parameter, the
+declaration of that class must be complete and not simply <a indepth="true" href="misc-technical-issues.html#[34.9]">forward declared<!--rawtext:[34.9]:rawtext--></a>.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="compiler-dependencies.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="misc-environmental-issues.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="bottom"></a>
+<a href="mailto:cline@parashift.com"><img src="mbox.gif" alt="E-Mail" height="26" width="89">&nbsp;E-mail the author</a><br>
+[&nbsp;<a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html"><em>C++ FAQ Lite</em></a>
+|&nbsp;<a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html#table-of-contents">Table&nbsp;of&nbsp;contents</a>
+|&nbsp;<a indepth="true" href="subject-index.html">Subject&nbsp;index</a>
+|&nbsp;<a indepth="true" href="copy-permissions.html#[1.1]">About&nbsp;the&nbsp;author</a>
+|&nbsp;<a indepth="true" href="copy-permissions.html#[1.2]">©</a>
+|&nbsp;<a indepth="true" href="on-line-availability.html#[2.2]">Download&nbsp;your&nbsp;own&nbsp;copy</a>&nbsp;]<br>
+<small>Revised Feb 29, 2000</small>
+
+
+</p>
+
+</body></html>

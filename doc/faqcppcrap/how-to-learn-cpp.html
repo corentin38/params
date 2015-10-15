@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>[26] Learning OO/C++, C++ FAQ Lite</title>
+<meta name="FILENAME" content="how-to-learn-cpp.html">
+<meta name="ABSTRACT" content="[26] Learning OO/C++, C++ FAQ Lite">
+<meta name="OWNER" content="cline@parashift.com">
+<meta name="AUTHOR" content="Marshall Cline, cline@parashift.com">
+
+<link rev="made" href="mailto:cline@parashift.com">
+</head>
+<body>
+<h1><a name="top"></a>[26] Learning OO/C++<br>
+<small><small>(Part of <a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html"><em>C++ FAQ Lite</em></a>, <a indepth="true" href="copy-permissions.html#[1.2]">Copyright&nbsp;© 1991-2000</a>, <a href="http://marshall-cline.att.net/" target="OutsideTheFAQ">Marshall Cline</a>, <a href="mailto:cline@parashift.com">cline@parashift.com</a>)</small></small></h1>
+<hr>
+<h3>FAQs in section [26]:</h3>
+<ul>
+<li><a indepth="true" href="how-to-learn-cpp.html#[26.1]">[26.1] What is mentoring?</a></li>
+<li><a indepth="true" href="how-to-learn-cpp.html#[26.2]">[26.2] Should I learn C before I learn OO/C++?</a></li>
+<li><a indepth="true" href="how-to-learn-cpp.html#[26.3]">[26.3] Should I learn Smalltalk before I learn OO/C++?</a></li>
+<li><a indepth="true" href="how-to-learn-cpp.html#[26.4]">[26.4] Should I buy one book, or several?</a></li>
+<li><a indepth="true" href="how-to-learn-cpp.html#[26.5]">[26.5] What are some best-of-breed C++ <em>morality</em> guides?</a></li>
+<li><a indepth="true" href="how-to-learn-cpp.html#[26.6]">[26.6] What are some best-of-breed C++ <em>legality</em> guides?</a></li>
+<li><a indepth="true" href="how-to-learn-cpp.html#[26.7]">[26.7] Are there other OO books that are relevant to OO/C++?</a></li>
+<li><a indepth="true" href="how-to-learn-cpp.html#[26.8]">[26.8] But those books are too advanced for me since I've never used
+any programming language before; is there any hope for me?</a></li>
+</ul>
+<p></p><hr>
+<p><a name="[26.1]"></a>
+</p><h3>[26.1] What is mentoring?</h3>
+<p>It's the most important tool in learning OO.
+</p><p>Object-oriented thinking is caught, not just taught.  Get cozy with someone who
+<em>really</em> knows what they're talking about, and try to get inside their
+head and watch them solve problems.  Listen.  Learn by emulating.
+</p><p>If you're working for a company, get them to bring someone in who can act as a
+mentor and guide.  We've seen gobs and gobs of money wasted by companies who
+"saved money" by simply buying their employees a book ("Here's a book; read it
+over the weekend; on Monday you'll be an OO developer").
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="coding-standards.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="smalltalk.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[26.2]"></a>
+</p><h3>[26.2] Should I learn C before I learn OO/C++?</h3>
+<p>Don't bother.
+</p><p>If your ultimate goal is to learn OO/C++ and you don't already know C, reading
+books or taking courses in C will not only waste your time, but it will teach
+you a bunch of things that you'll explicitly have to un-learn when you finally
+get back on track and learn OO/C++ (e.g., <a indepth="true" href="freestore-mgmt.html#[16.3]"><tt>malloc()</tt><!--rawtext:[16.3]:rawtext--></a>,
+<a indepth="true" href="input-output.html#[15.1]"><tt>printf()</tt><!--rawtext:[15.1]:rawtext--></a>, <a indepth="true" href="virtual-functions.html">unnecessary
+use of <tt>switch</tt> statements<!--rawtext:[20]:rawtext--></a>, <a indepth="true" href="exceptions.html">error-code exception
+handling<!--rawtext:[17]:rawtext--></a>, <a indepth="true" href="inline-functions.html#[9.3]">unnecessary use of <tt>#define</tt>
+macros<!--rawtext:[9.3]:rawtext--></a>, etc.).
+</p><p>If you want to learn OO/C++, learn OO/C++.  Taking time out to learn C will
+waste your time and confuse you.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="coding-standards.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="smalltalk.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[26.3]"></a>
+</p><h3>[26.3] Should I learn Smalltalk before I learn OO/C++?</h3>
+<p>Don't bother.
+</p><p>If your ultimate goal is to learn OO/C++ and you don't already know Smalltalk,
+reading books or taking courses in Smalltalk will not only waste your time, but
+it will teach you a bunch of things that you'll explicitly have to un-learn
+when you finally get back on track and learn OO/C++ (e.g., <a indepth="true" href="smalltalk.html#[27.3]">dynamic
+typing<!--rawtext:[27.3]:rawtext--></a>, <a indepth="true" href="smalltalk.html#[27.5]">non-subtyping
+inheritance<!--rawtext:[27.5]:rawtext--></a>, <a indepth="true" href="exceptions.html">error-code
+exception handling<!--rawtext:[17]:rawtext--></a>, etc.).
+</p><p>Knowing a "pure" OO language doesn't make the transition to OO/C++ any easier.
+This is not a theory; we have trained and mentored literally
+thousands of software professionals in OO.  In fact, Smalltalk experience can
+make it <em>harder</em> for some people: they need to <em>unlearn</em> some
+rather deep notions about typing and inheritance in addition to needing to
+learn new syntax and idioms.  This unlearning process is especially painful and
+slow for those who cling to Smalltalk with religious zeal ("C++ is not like
+Smalltalk, therefore C++ is evil").
+</p><p>If you want to learn OO/C++, learn OO/C++.  Taking time out to learn Smalltalk
+will waste your time and confuse you.
+</p><p>Note: I sit on both the ANSI C++ (X3J16) and ANSI Smalltalk (X3J20)
+<a indepth="true" href="big-picture.html#[6.11]">standardization committees<!--rawtext:[6.11]:rawtext--></a>.  I am <a indepth="true" href="big-picture.html#[6.4]">not a
+language bigot<!--rawtext:[6.4]:rawtext--></a>.  I'm not saying C++ is better or worse
+than Smalltalk; I'm simply saying that <a indepth="true" href="smalltalk.html#[27.1]">they are
+different<!--rawtext:[27.1]:rawtext--></a>.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="coding-standards.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="smalltalk.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[26.4]"></a>
+</p><h3>[26.4] Should I buy one book, or several?</h3>
+<p>At least two.
+</p><p>There are two categories of insight and knowledge in OO programming using C++.
+You're better off getting a "best of breed" book from each category rather than
+trying to find a single book that does an OK job at everything.  The two OO/C++
+programming categories are:
+</p><ul>
+<li><a indepth="true" href="how-to-learn-cpp.html#[26.6]">C++ <em>legality</em> guides — what you <em>can</em> and
+<em>can't</em> do in C++<!--rawtext:[26.6]:rawtext--></a>.</li>
+<li><a indepth="true" href="how-to-learn-cpp.html#[26.5]">C++ <em>morality</em> guides — what you <em>should</em> and
+<em>shouldn't</em> do in C++<!--rawtext:[26.5]:rawtext--></a>.</li>
+</ul>
+<p>Legality guides describe all language features with roughly the same level of
+emphasis; morality guides focus on those language features that you will use
+most often in typical programming tasks.  Legality guides tell you how to get a
+given feature past the compiler; morality guides tell you whether or not to use
+that feature in the first place.
+</p><p>Meta comments:
+</p><ul>
+<li>Neither of these categories is optional.  You <em>must</em> have a
+good grasp of both.</li>
+<li>These categories do not trade off against each other.  You shouldn't
+argue in favor of one over the other.  They dove-tail.</li>
+</ul>
+<p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="coding-standards.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="smalltalk.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[26.5]"></a>
+</p><h3>[26.5] What are some best-of-breed C++ <em>morality</em> guides?</h3>
+<p>Here's my personal (subjective and selective) short-list of must-read C++
+morality guides, alphabetically by author:
+</p><ul>
+<li>Cline, Lomow, and Girou, <em>C++ FAQs, Second Edition</em>, 587 pgs,
+Addison-Wesley, 1999, ISBN 0-201-30983-1.  Covers around 500 topics in a
+FAQ-like Q&amp;A format.</li>
+<li>Meyers, <em>Effective C++, Second Edition</em>, 224 pgs,
+Addison-Wesley, 1998, ISBN 0-201-92488-9.  Covers 50 topics in a short essay
+format.</li>
+<li>Meyers, <em>More Effective C++</em>, 336 pgs, Addison-Wesley, 1996,
+ISBN 0-201-63371-X.  Covers 35 topics in a short essay format.</li>
+</ul>
+<p><em>Similarities:</em> All three books are extensively illustrated with code
+examples.  All three are excellent, insightful, useful, gold plated books.  All
+three have excellent sales records.
+</p><p><em>Differences:</em> Cline/Lomow/Girou's examples are complete, working
+programs rather than code fragments or standalone classes.  Meyers contains
+numerous line-drawings that illustrate the points.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="coding-standards.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="smalltalk.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[26.6]"></a>
+</p><h3>[26.6] What are some best-of-breed C++ <em>legality</em> guides?</h3>
+<p>Here's my personal (subjective and selective) short-list of must-read C++
+legality guides, alphabetically by author:
+</p><ul>
+<li>Lippman and Lajoie, <em>C++ Primer, Third Edition</em>, 1237 pgs,
+Addison-Wesley, 1998, ISBN 0-201-82470-1.  Very
+readable/approachable.</li>
+<li>Stroustrup, <em>The C++ Programming Language, Third Edition</em>,
+911 pgs, Addison-Wesley, 1998, ISBN 0-201-88954-4.  Covers a lot of
+ground.</li>
+</ul>
+<p><em>Similarities:</em> Both books are excellent overviews of almost every
+language feature.  I reviewed them for back-to-back issues of <em>C++
+Report</em>, and I said that they are both top notch, gold plated, excellent
+books.  Both have excellent sales records.
+</p><p><em>Differences:</em> If you don't know C, Lippman's book is better for you.  If
+you know C and you want to cover a lot of ground quickly, Stroustrup's book is
+better for you.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="coding-standards.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="smalltalk.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[26.7]"></a>
+</p><h3>[26.7] Are there other OO books that are relevant to OO/C++?</h3>
+<p>Yes!  Tons!
+</p><p>The <a indepth="true" href="how-to-learn-cpp.html#[26.5]">morality<!--rawtext:[26.5]:rawtext--></a> and <a indepth="true" href="how-to-learn-cpp.html#[26.6]">legality<!--rawtext:[26.6]:rawtext--></a>
+categories listed above were for OO <em>programming</em>.  The areas of OO
+analysis and OO design are also relevant, and have their own best-of-breed
+books.
+</p><p>There are tons and tons of good books in these other areas.  The seminal book
+on OO design patterns is (in my personal, subjective and selective, opinion) a
+must-read book: Gamma et al., <em>Design Patterns</em>, 395 pgs, Addison-Wesley,
+1995, ISBN 0-201-63361-2.  Describes "patterns" that commonly show up in good
+OO designs.  You <em>must</em> read this book if you intend to do OO design work.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="coding-standards.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="smalltalk.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[26.8]"></a>
+</p><h3>[26.8] But those books are too advanced for me since I've never used
+any programming language before; is there any hope for me?</h3>
+<p>Yes.
+</p><p>There are probably many C++ books that are targeted for people who are brand
+new programmers, but here's one that I've read: Heller, <em>Who's afraid of
+C++?</em>, AP Professional, 1996, ISBN 0-12-339097-4.
+</p><p>Note that you should supplement that book with one of the above books and/or the
+FAQ's sections on <a indepth="true" href="const-correctness.html">const correctness<!--rawtext:[18]:rawtext--></a> and
+<a indepth="true" href="exceptions.html">exception safety<!--rawtext:[17]:rawtext--></a> since these topics aren't highlighted
+in that book.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="coding-standards.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="smalltalk.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="bottom"></a>
+<a href="mailto:cline@parashift.com"><img src="mbox.gif" alt="E-Mail" height="26" width="89">&nbsp;E-mail the author</a><br>
+[&nbsp;<a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html"><em>C++ FAQ Lite</em></a>
+|&nbsp;<a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html#table-of-contents">Table&nbsp;of&nbsp;contents</a>
+|&nbsp;<a indepth="true" href="subject-index.html">Subject&nbsp;index</a>
+|&nbsp;<a indepth="true" href="copy-permissions.html#[1.1]">About&nbsp;the&nbsp;author</a>
+|&nbsp;<a indepth="true" href="copy-permissions.html#[1.2]">©</a>
+|&nbsp;<a indepth="true" href="on-line-availability.html#[2.2]">Download&nbsp;your&nbsp;own&nbsp;copy</a>&nbsp;]<br>
+<small>Revised Feb 29, 2000</small>
+
+
+</p>
+
+</body></html>

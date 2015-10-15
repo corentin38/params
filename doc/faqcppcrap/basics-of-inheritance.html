@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>[19] Inheritance basics, C++ FAQ Lite</title>
+<meta name="FILENAME" content="basics-of-inheritance.html">
+<meta name="ABSTRACT" content="[19] Inheritance basics, C++ FAQ Lite">
+<meta name="OWNER" content="cline@parashift.com">
+<meta name="AUTHOR" content="Marshall Cline, cline@parashift.com">
+
+<link rev="made" href="mailto:cline@parashift.com">
+</head>
+<body>
+<h1><a name="top"></a>[19] Inheritance — basics<br>
+<small><small>(Part of <a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html"><em>C++ FAQ Lite</em></a>, <a indepth="true" href="copy-permissions.html#[1.2]">Copyright&nbsp;© 1991-2000</a>, <a href="http://marshall-cline.att.net/" target="OutsideTheFAQ">Marshall Cline</a>, <a href="mailto:cline@parashift.com">cline@parashift.com</a>)</small></small></h1>
+<hr>
+<h3>FAQs in section [19]:</h3>
+<ul>
+<li><a indepth="true" href="basics-of-inheritance.html#[19.1]">[19.1] Is inheritance important to C++?</a></li>
+<li><a indepth="true" href="basics-of-inheritance.html#[19.2]">[19.2] When would I use inheritance?</a></li>
+<li><a indepth="true" href="basics-of-inheritance.html#[19.3]">[19.3] How do you express inheritance in C++?</a></li>
+<li><a indepth="true" href="basics-of-inheritance.html#[19.4]">[19.4] Is it OK to convert a pointer from a derived class
+to its base class?</a></li>
+<li><a indepth="true" href="basics-of-inheritance.html#[19.5]">[19.5] What's the difference between <tt>public:</tt>, <tt>private:</tt>, and
+<tt>protected:</tt>?</a></li>
+<li><a indepth="true" href="basics-of-inheritance.html#[19.6]">[19.6] Why can't my derived class access <tt>private:</tt> things
+from my base class?</a></li>
+<li><a indepth="true" href="basics-of-inheritance.html#[19.7]">[19.7] How can I protect subclasses from breaking when I
+change internal parts?</a></li>
+</ul>
+<p></p><hr>
+<p><a name="[19.1]"></a>
+</p><h3>[19.1] Is inheritance important to C++?</h3>
+<p>Yep.
+</p><p>Inheritance is what separates abstract data type (ADT) programming from OO
+programming.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="const-correctness.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="virtual-functions.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[19.2]"></a>
+</p><h3>[19.2] When would I use inheritance?</h3>
+<p>As a specification device.
+</p><p>Human beings abstract things on two dimensions: part-of and kind-of.  A Ford
+Taurus is-a-kind-of-a Car, and a Ford Taurus has-a Engine, Tires, etc.  The
+part-of hierarchy has been a part of software since the ADT style became
+relevant; inheritance adds "the other" major dimension of decomposition.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="const-correctness.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="virtual-functions.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[19.3]"></a>
+</p><h3>[19.3] How do you express inheritance in C++?</h3>
+<p>By the <tt>:&nbsp;public</tt> syntax:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Car&nbsp;:&nbsp;public&nbsp;Vehicle&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;};
+</tt>
+</p><p>We state the above relationship in several ways:
+</p><ul>
+<li><tt>Car</tt> is "a kind of a" <tt>Vehicle</tt></li>
+<li><tt>Car</tt> is "derived from" <tt>Vehicle</tt></li>
+<li><tt>Car</tt> is "a specialized" <tt>Vehicle</tt></li>
+<li><tt>Car</tt> is the "subclass" of <tt>Vehicle</tt></li>
+<li><tt>Vehicle</tt> is the "base class" of <tt>Car</tt></li>
+<li><tt>Vehicle</tt> is the "superclass" of <tt>Car</tt> (this not as common in the
+C++ community)</li>
+</ul>
+<p>(Note: this FAQ has to do with <tt>public</tt> inheritance; <a indepth="true" href="private-inheritance.html"><tt>private</tt> and
+<tt>protected</tt> inheritance<!--rawtext:[24]:rawtext--></a> are different.)
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="const-correctness.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="virtual-functions.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[19.4]"></a>
+</p><h3>[19.4] Is it OK to convert a pointer from a derived class
+to its base class?</h3>
+<p>Yes.
+</p><p>An object of a derived class is a kind of the base class.  Therefore the
+conversion from a derived class pointer to a base class pointer is
+perfectly safe, and happens all the time.  For example, if I am pointing at a
+car, I am in fact pointing at a vehicle, so converting a <tt>Car*</tt> to a <tt>Vehicle*</tt>
+is perfectly safe and normal:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;f(Vehicle*&nbsp;v);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;g(Car*&nbsp;c)&nbsp;{&nbsp;f(c);&nbsp;}&nbsp;&nbsp;</tt><em>//&nbsp;Perfectly&nbsp;safe;&nbsp;no&nbsp;cast</em><tt>
+</tt>
+</p><p>(Note: this FAQ has to do with <tt>public</tt> inheritance; <a indepth="true" href="private-inheritance.html"><tt>private</tt> and
+<tt>protected</tt> inheritance<!--rawtext:[24]:rawtext--></a> are different.)
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="const-correctness.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="virtual-functions.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[19.5]"></a>
+</p><h3>[19.5] What's the difference between <tt>public:</tt>, <tt>private:</tt>, and
+<tt>protected:</tt>?</h3>
+<ul>
+<li>A member (either data member or member function) declared in a
+<tt>private:</tt> section of a class can only be accessed by member functions and
+<a indepth="true" href="friends.html">friends<!--rawtext:[14]:rawtext--></a> of that class</li>
+<li>A member (either data member or member function) declared in a
+<tt>protected:</tt> section of a class can only be accessed by member functions and
+<a indepth="true" href="friends.html">friends<!--rawtext:[14]:rawtext--></a> of that class, and by member functions and
+<a indepth="true" href="friends.html">friends<!--rawtext:[14]:rawtext--></a> of derived classes</li>
+<li>A member (either data member or member function) declared in a
+<tt>public:</tt> section of a class can be accessed by anyone</li>
+</ul>
+<p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="const-correctness.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="virtual-functions.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[19.6]"></a>
+</p><h3>[19.6] Why can't my derived class access <tt>private:</tt> things
+from my base class?</h3>
+<p>To protect you from future changes to the base class.
+</p><p>Derived classes do not get access to <tt>private</tt> members of a base class.
+This effectively "seals off" the derived class from any changes made to the
+<tt>private</tt> members of the base class.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="const-correctness.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="virtual-functions.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[19.7]"></a>
+</p><h3>[19.7] How can I protect subclasses from breaking when I
+change internal parts?</h3>
+<p>A class has two distinct interfaces for two distinct sets of clients:
+</p><ul>
+<li>It has a <tt>public:</tt> interface that serves unrelated
+classes</li>
+<li>It has a <tt>protected:</tt> interface that serves derived
+classes</li>
+</ul>
+<p>Unless you expect all your subclasses to be built by your own team, you should
+consider making your base class's bits be <tt>private:</tt>, and use <tt>protected:</tt>
+<tt>inline</tt> access functions by which derived classes will access the <tt>private</tt>
+data in the base class.  This way the <tt>private</tt> bits can change, but the
+derived class's code won't break unless you change the <tt>protected</tt> access
+functions.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="const-correctness.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="virtual-functions.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="bottom"></a>
+<a href="mailto:cline@parashift.com"><img src="mbox.gif" alt="E-Mail" height="26" width="89">&nbsp;E-mail the author</a><br>
+[&nbsp;<a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html"><em>C++ FAQ Lite</em></a>
+|&nbsp;<a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html#table-of-contents">Table&nbsp;of&nbsp;contents</a>
+|&nbsp;<a indepth="true" href="subject-index.html">Subject&nbsp;index</a>
+|&nbsp;<a indepth="true" href="copy-permissions.html#[1.1]">About&nbsp;the&nbsp;author</a>
+|&nbsp;<a indepth="true" href="copy-permissions.html#[1.2]">©</a>
+|&nbsp;<a indepth="true" href="on-line-availability.html#[2.2]">Download&nbsp;your&nbsp;own&nbsp;copy</a>&nbsp;]<br>
+<small>Revised Feb 29, 2000</small>
+
+
+</p>
+
+</body></html>

@@ -1,0 +1,576 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>[10] Constructors, C++ FAQ Lite</title>
+<meta name="FILENAME" content="ctors.html">
+<meta name="ABSTRACT" content="[10] Constructors, C++ FAQ Lite">
+<meta name="OWNER" content="cline@parashift.com">
+<meta name="AUTHOR" content="Marshall Cline, cline@parashift.com">
+
+<link rev="made" href="mailto:cline@parashift.com">
+</head>
+<body>
+<h1><a name="top"></a>[10] Constructors<br>
+<small><small>(Part of <a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html"><em>C++ FAQ Lite</em></a>, <a indepth="true" href="copy-permissions.html#[1.2]">Copyright&nbsp;© 1991-2000</a>, <a href="http://marshall-cline.att.net/" target="OutsideTheFAQ">Marshall Cline</a>, <a href="mailto:cline@parashift.com">cline@parashift.com</a>)</small></small></h1>
+<hr>
+<h3>FAQs in section [10]:</h3>
+<ul>
+<li><a indepth="true" href="ctors.html#[10.1]">[10.1] What's the deal with constructors?</a></li>
+<li><a indepth="true" href="ctors.html#[10.2]">[10.2] Is there any difference between <tt>List&nbsp;x;</tt> and <tt>List&nbsp;x();</tt>?</a></li>
+<li><a indepth="true" href="ctors.html#[10.3]">[10.3] How can I make a constructor call another constructor as a
+primitive?</a></li>
+<li><a indepth="true" href="ctors.html#[10.4]">[10.4] Is the default constructor for <tt>Fred</tt> always
+<tt>Fred::Fred()</tt>?</a></li>
+<li><a indepth="true" href="ctors.html#[10.5]">[10.5] Which constructor gets called when I create an
+array of <tt>Fred</tt> objects?</a></li>
+<li><a indepth="true" href="ctors.html#[10.6]">[10.6] Should my constructors use "initialization lists" or "assignment"?</a></li>
+<li><a indepth="true" href="ctors.html#[10.7]">[10.7] Should you use the <tt>this</tt> pointer in the constructor?</a> <img src="new.gif" alt="NEW!"></li>
+<li><a indepth="true" href="ctors.html#[10.8]">[10.8] What is the "Named Constructor Idiom"?</a></li>
+<li><a indepth="true" href="ctors.html#[10.9]">[10.9] Why can't I initialize my <tt>static</tt> member
+data in my constructor's initialization list?</a></li>
+<li><a indepth="true" href="ctors.html#[10.10]">[10.10] Why are classes with <tt>static</tt> data members
+getting linker errors?</a></li>
+<li><a indepth="true" href="ctors.html#[10.11]">[10.11] What's the "<tt>static</tt> initialization order fiasco"?</a></li>
+<li><a indepth="true" href="ctors.html#[10.12]">[10.12] How do I prevent the "<tt>static</tt>
+initialization order fiasco"?</a></li>
+<li><a indepth="true" href="ctors.html#[10.13]">[10.13] How do I prevent the "<tt>static</tt>
+initialization order fiasco" for my <tt>static</tt> data members?</a></li>
+<li><a indepth="true" href="ctors.html#[10.14]">[10.14] How can I handle a constructor that fails?</a></li>
+</ul>
+<p></p><hr>
+<p><a name="[10.1]"></a>
+</p><h3>[10.1] What's the deal with constructors?</h3>
+<p>Constructors build objects from dust.
+</p><p>Constructors are like "init functions".  They turn a pile of arbitrary bits
+into a living object.  Minimally they initialize internally used fields.  They
+may also allocate resources (memory, files, semaphores, sockets, etc).
+</p><p>"ctor" is a typical abbreviation for constructor.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="inline-functions.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="dtors.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[10.2]"></a>
+</p><h3>[10.2] Is there any difference between <tt>List&nbsp;x;</tt> and <tt>List&nbsp;x();</tt>?</h3>
+<p>A <em>big</em> difference!
+</p><p>Suppose that <tt>List</tt> is the name of some class.  Then function <tt>f()</tt> declares
+a local <tt>List</tt> object called <tt>x</tt>:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;f()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;x;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Local&nbsp;object&nbsp;named&nbsp;<tt>x</tt>&nbsp;(of&nbsp;class&nbsp;<tt>List</tt>)</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>But function <tt>g()</tt> declares a function called <tt>x()</tt> that returns a
+<tt>List</tt>:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;g()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;x();&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Function&nbsp;named&nbsp;<tt>x</tt>&nbsp;(that&nbsp;returns&nbsp;a&nbsp;<tt>List</tt>)</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="inline-functions.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="dtors.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[10.3]"></a>
+</p><h3>[10.3] How can I make a constructor call another constructor as a
+primitive?</h3>
+<p>No way.
+</p><p>Dragons be here: if you call another constructor, the compiler initializes a
+temporary local object; it does <em>not</em> initialize <tt>this</tt> object.  You can
+combine both constructors by using a default parameter, or you can share their
+common code in a private <tt>init()</tt> member function.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="inline-functions.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="dtors.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[10.4]"></a>
+</p><h3>[10.4] Is the default constructor for <tt>Fred</tt> always
+<tt>Fred::Fred()</tt>?</h3>
+<p>No.  A "default constructor" is a constructor that <em>can be called</em> with
+no arguments.  Thus a constructor that takes no arguments is certainly a
+default constructor:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Fred&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fred();&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Default&nbsp;constructor:&nbsp;can&nbsp;be&nbsp;called&nbsp;with&nbsp;no&nbsp;args</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;};
+</tt>
+</p><p>However it is possible (and even likely) that a default constructor can take
+arguments, provided they are given default values:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Fred&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fred(int&nbsp;i=3,&nbsp;int&nbsp;j=5);&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Default&nbsp;constructor:&nbsp;can&nbsp;be&nbsp;called&nbsp;with&nbsp;no&nbsp;args</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;};
+</tt>
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="inline-functions.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="dtors.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[10.5]"></a>
+</p><h3>[10.5] Which constructor gets called when I create an
+array of <tt>Fred</tt> objects?</h3>
+<p><tt>Fred</tt>'s <a indepth="true" href="ctors.html#[10.4]">default constructor<!--rawtext:[10.4]:rawtext--></a> (except as discussed
+below).
+</p><p>There is no way to tell the compiler to call a different constructor (except as
+discussed below).  If your <tt>class</tt> <tt>Fred</tt> doesn't have a <a indepth="true" href="ctors.html#[10.4]">default constructor<!--rawtext:[10.4]:rawtext--></a>, attempting to create an array of <tt>Fred</tt> objects is
+trapped as an error at compile time.
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Fred&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fred(int&nbsp;i,&nbsp;int&nbsp;j);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...&nbsp;assume&nbsp;there&nbsp;is&nbsp;no&nbsp;<a indepth="true" href="ctors.html#[10.4]">default&nbsp;constructor<!--rawtext:[10.4]:rawtext--></a>&nbsp;in&nbsp;<tt>class</tt>&nbsp;<tt>Fred</tt>&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;};<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;main()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fred&nbsp;a[10];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;ERROR:&nbsp;<tt>Fred</tt>&nbsp;doesn't&nbsp;have&nbsp;a&nbsp;default&nbsp;constructor</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fred*&nbsp;p&nbsp;=&nbsp;new&nbsp;Fred[10];&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;ERROR:&nbsp;<tt>Fred</tt>&nbsp;doesn't&nbsp;have&nbsp;a&nbsp;default&nbsp;constructor</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>However if you are creating an <a indepth="true" href="class-libraries.html#[32.1]">STL<!--rawtext:[32.1]:rawtext--></a> <tt>vector&lt;Fred&gt;</tt> rather than
+an array of <tt>Fred</tt> (which you probably should be doing anyway since
+<a indepth="true" href="proper-inheritance.html#[21.5]">arrays are evil<!--rawtext:[21.5]:rawtext--></a>), you don't have to have a default
+constructor in <tt>class</tt> <tt>Fred</tt>, since you can give the <tt>vector</tt> a <tt>Fred</tt> object
+to be used to initialize the elements:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;#include&nbsp;&lt;vector&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;using&nbsp;namespace&nbsp;std;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;main()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vector&lt;Fred&gt;&nbsp;a(10,&nbsp;Fred(5,7));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;The&nbsp;10&nbsp;<tt>Fred</tt>&nbsp;objects&nbsp;in&nbsp;<tt>vector</tt>&nbsp;<tt>a</tt>&nbsp;will&nbsp;be&nbsp;initialized&nbsp;with&nbsp;<tt>Fred(5,7)</tt>.</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>Even though you <em>ought</em> to use a <tt>vector</tt> rather than an array,
+there are times when an array might be the right thing to do, and for those,
+there is the "explicit initialization of arrays" syntax.  Here's how it looks:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Fred&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fred(int&nbsp;i,&nbsp;int&nbsp;j);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...&nbsp;assume&nbsp;there&nbsp;is&nbsp;no&nbsp;<a indepth="true" href="ctors.html#[10.4]">default&nbsp;constructor<!--rawtext:[10.4]:rawtext--></a>&nbsp;in&nbsp;<tt>class</tt>&nbsp;<tt>Fred</tt>&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;};<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;main()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fred&nbsp;a[10]&nbsp;=&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fred(5,7),&nbsp;Fred(5,7),&nbsp;Fred(5,7),&nbsp;Fred(5,7),&nbsp;Fred(5,7),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fred(5,7),&nbsp;Fred(5,7),&nbsp;Fred(5,7),&nbsp;Fred(5,7),&nbsp;Fred(5,7)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;};<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;The&nbsp;10&nbsp;<tt>Fred</tt>&nbsp;objects&nbsp;in&nbsp;array&nbsp;<tt>a</tt>&nbsp;will&nbsp;be&nbsp;initialized&nbsp;with&nbsp;<tt>Fred(5,7)</tt>.</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>Of course you don't have to do <tt>Fred(5,7)</tt> for every entry — you can put
+in any numbers you want, even parameters or other variables.  The point is that
+this syntax is (a) doable but (b) not as nice as the <tt>vector</tt> syntax.  Remember
+this: <a indepth="true" href="proper-inheritance.html#[21.5]">arrays are evil<!--rawtext:[21.5]:rawtext--></a> — unless there is a
+compelling reason to use an array, use a <tt>vector</tt> instead.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="inline-functions.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="dtors.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[10.6]"></a>
+</p><h3>[10.6] Should my constructors use "initialization lists" or "assignment"?</h3>
+<p>Constructors should initialize all member objects in the initialization list.
+</p><p>For example, this constructor initializes member object <tt>x_</tt> using an
+initialization list: <tt>Fred::Fred()&nbsp;:&nbsp;x_(</tt><em>whatever</em><tt>)&nbsp;{&nbsp;}</tt>.
+From a performance perspective, it is important to note that the
+<em>whatever</em> expression doesn't automatically cause a separate object to be
+created and copied into <tt>x_</tt>: if the types are the same the result of
+<em>...whatever...</em> will be constructed directly inside <tt>x_</tt>.
+</p><p>In contrast the following constructor uses assignment: <tt>Fred::Fred()&nbsp;{&nbsp;x_&nbsp;=&nbsp;</tt><em>whatever</em><tt>;&nbsp;}</tt>.  In this case the
+expression <em>whatever</em> causes a separate, temporary object to be created,
+and this temporary object is passed into the <tt>x_</tt> object's assignment
+operator, then is destructed at the <tt>;</tt>.  That's inefficient.
+</p><p>There's another source of inefficiency as well: in the second (assignment)
+case, the object's default constructor (implicitly called before the
+constructor body's "<tt>{</tt>") might, for example, allocate some default
+amount of memory or open some default file.  All this work could be for naught
+if the <em>whatever</em> expression and/or assignment operator causes the object
+to close that file and/or release that memory (e.g., if the default constructor
+didn't allocate a large enough pool of memory or if it opened the wrong file).
+</p><p>Conclusion: All other things being equal, your code will run faster if you use
+initialization lists rather than assignment.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="inline-functions.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="dtors.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[10.7]"></a>
+</p><h3>[10.7] Should you use the <tt>this</tt> pointer in the constructor? <img src="new.gif" alt="NEW!"></h3>
+<small><em>[Recently created with the help of <a href="mailto:jim.hyslop@leitch.com">Jim Hyslop</a> (on 1/00).  <a indepth="true" href="dtors.html#[11.8]">Click here to go to the next FAQ in the "chain" of recent changes<!--rawtext:[11.8]:rawtext--></a>.]</em></small>
+<p>Some people feel you should not use the <tt>this</tt> pointer in a constructor because
+the <tt>this</tt> object is not fully formed yet.  However you can use <tt>this</tt> in the
+constructor (in the <tt>{</tt>body<tt>}</tt> and even in the <a indepth="true" href="ctors.html#[10.6]">initialization list<!--rawtext:[10.6]:rawtext--></a>) if you are careful.
+</p><p>Once you're in the <tt>{</tt>body<tt>}</tt> of the constructor, it's easy to
+imagine that you can use the <tt>this</tt> pointer since all the base class subobjects
+and the member objects will already have been fully constructed.  However even
+there you must be careful.  For example, if you call a <tt>virtual</tt> member
+function (or call some other function which turns around and calls a <tt>virtual</tt>
+member function) on the <tt>this</tt> object, <a indepth="true" href="strange-inheritance.html#[23.1]">you
+may not get what you want<!--rawtext:[23.1]:rawtext--></a>.
+</p><p>But you are even allowed to use the <tt>this</tt> pointer in the constructor's
+<a indepth="true" href="ctors.html#[10.6]">initializer list<!--rawtext:[10.6]:rawtext--></a>, provided you are very careful that you
+don't touch any member objects or base class subobjects that have not yet been
+constructed.  This requires a rather intimate knowledge of the order that
+things happen in a constructor — you have been warned.  The safest thing to do
+is store the value of the <tt>this</tt> pointer somewhere and use that pointer later.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="inline-functions.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="dtors.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[10.8]"></a>
+</p><h3>[10.8] What is the "Named Constructor Idiom"?</h3>
+<p>A technique that provides more intuitive and/or safer construction operations
+for users of your class.
+</p><p>The problem is that constructors always have the same name as the class.
+Therefore the only way to differentiate between the various constructors of a
+class is by the parameter list.  But if there are lots of constructors, the
+differences between the constructors becomes somewhat subtle and error prone.
+</p><p>With the Named Constructor Idiom, you declare all the class's constructors in
+the <tt>private:</tt> or <tt>protected:</tt> sections, and you provide <tt>public</tt> <tt>static</tt>
+methods that return an object.  These <tt>static</tt> methods are the so-called "Named
+Constructors." In general there is one such <tt>static</tt> method for each different
+way to construct an object.
+</p><p>For example, suppose we are building a <tt>Point</tt> class that represents a position
+on the X-Y plane.  Turns out there are two common ways to specify a 2-space
+coordinate: rectangular coordinates (X+Y), polar coordinates (Radius+Angle).
+(Don't worry if you can't remember these; the point isn't the particulars of
+coordinate systems; the point is that there are several ways to create a
+<tt>Point</tt> object).  Unfortunately the parameters for these two coordinate systems
+are the same: two <tt>float</tt>s.  This would create an ambiguity error in the
+overloaded constructors:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Point&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Point(float&nbsp;x,&nbsp;float&nbsp;y);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Rectangular&nbsp;coordinates</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Point(float&nbsp;r,&nbsp;float&nbsp;a);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Polar&nbsp;coordinates&nbsp;(radius&nbsp;and&nbsp;angle)</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;ERROR:&nbsp;Overload&nbsp;is&nbsp;Ambiguous:&nbsp;<tt>Point::Point(float,float)</tt></em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;};<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;main()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Point&nbsp;p&nbsp;=&nbsp;Point(5.7,&nbsp;1.2);&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Ambiguous:&nbsp;Which&nbsp;coordinate&nbsp;system?</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>One way to solve this ambiguity is to use the Named Constructor Idiom:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;#include&nbsp;&lt;math.h&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;To&nbsp;get&nbsp;<tt>sin()</tt>&nbsp;and&nbsp;<tt>cos()</tt></em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Point&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;static&nbsp;Point&nbsp;rectangular(float&nbsp;x,&nbsp;float&nbsp;y);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Rectangular&nbsp;coord's</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;static&nbsp;Point&nbsp;polar(float&nbsp;radius,&nbsp;float&nbsp;angle);&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Polar&nbsp;coordinates</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;These&nbsp;<tt>static</tt>&nbsp;methods&nbsp;are&nbsp;the&nbsp;so-called&nbsp;"named&nbsp;constructors"</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;private:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Point(float&nbsp;x,&nbsp;float&nbsp;y);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Rectangular&nbsp;coordinates</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;x_,&nbsp;y_;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;};<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;inline&nbsp;Point::Point(float&nbsp;x,&nbsp;float&nbsp;y)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;x_(x),&nbsp;y_(y)&nbsp;{&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;inline&nbsp;Point&nbsp;Point::rectangular(float&nbsp;x,&nbsp;float&nbsp;y)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;return&nbsp;Point(x,&nbsp;y);&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;inline&nbsp;Point&nbsp;Point::polar(float&nbsp;radius,&nbsp;float&nbsp;angle)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;return&nbsp;Point(radius*cos(angle),&nbsp;radius*sin(angle));&nbsp;}
+</tt>
+</p><p>Now the users of <tt>Point</tt> have a clear and unambiguous syntax for creating
+<tt>Point</tt>s in either coordinate system:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;main()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Point&nbsp;p1&nbsp;=&nbsp;Point::rectangular(5.7,&nbsp;1.2);&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Obviously&nbsp;rectangular</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Point&nbsp;p2&nbsp;=&nbsp;Point::polar(5.7,&nbsp;1.2);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Obviously&nbsp;polar</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>Make sure your constructors are in the <tt>protected:</tt> section if you expect
+<tt>Fred</tt> to have derived classes.
+</p><p>The Named Constructor Idiom can also be used to <a indepth="true" href="freestore-mgmt.html#[16.19]">make sure your objects are always created via <tt>new</tt><!--rawtext:[16.19]:rawtext--></a>.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="inline-functions.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="dtors.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[10.9]"></a>
+</p><h3>[10.9] Why can't I initialize my <tt>static</tt> member
+data in my constructor's initialization list?</h3>
+<p>Because you must <em>explicitly</em> define your class's <tt>static</tt> data
+members.
+</p><p><tt>Fred.h</tt>:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Fred&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fred();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;private:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;i_;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;static&nbsp;int&nbsp;j_;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;};
+</tt>
+</p><p><tt>Fred.cpp</tt> (or <tt>Fred.C</tt> or whatever):
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;Fred::Fred()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;i_(10)&nbsp;&nbsp;</tt><em>//&nbsp;OK:&nbsp;you&nbsp;can&nbsp;(and&nbsp;should)&nbsp;initialize&nbsp;member&nbsp;data&nbsp;this&nbsp;way</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;j_(42)&nbsp;&nbsp;</tt><em>//&nbsp;Error:&nbsp;you&nbsp;cannot&nbsp;initialize&nbsp;<tt>static</tt>&nbsp;member&nbsp;data&nbsp;like&nbsp;this</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;You&nbsp;must&nbsp;define&nbsp;<tt>static</tt>&nbsp;data&nbsp;members&nbsp;this&nbsp;way:</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;Fred::j_&nbsp;=&nbsp;42;
+</tt>
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="inline-functions.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="dtors.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[10.10]"></a>
+</p><h3>[10.10] Why are classes with <tt>static</tt> data members
+getting linker errors?</h3>
+<p>Because <a indepth="true" href="ctors.html#[10.9]"><tt>static</tt> data members must be
+explicitly defined in exactly one compilation unit<!--rawtext:[10.9]:rawtext--></a>.  If you didn't do
+this, you'll probably get an <tt>"undefined&nbsp;external"</tt> linker error.  For
+example:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Fred.h</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Fred&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;private:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;static&nbsp;int&nbsp;j_;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Declares&nbsp;<tt>static</tt>&nbsp;data&nbsp;member&nbsp;<tt>Fred::j_</tt></em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;};
+</tt>
+</p><p>The linker will holler at you (<tt>"Fred::j_&nbsp;is&nbsp;not&nbsp;defined"</tt>) unless you
+define (as opposed to merely declare) <tt>Fred::j_</tt> in (exactly) one of your
+source files:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Fred.cpp</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;#include&nbsp;"Fred.h"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;Fred::j_&nbsp;=&nbsp;some_expression_evaluating_to_an_int;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Alternatively,&nbsp;if&nbsp;you&nbsp;wish&nbsp;to&nbsp;use&nbsp;the&nbsp;implicit&nbsp;0&nbsp;value&nbsp;for&nbsp;<tt>static</tt>&nbsp;<tt>int</tt>s:</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;<tt>int&nbsp;Fred::j_;</tt></em><tt>
+</tt>
+</p><p>The usual place to define <tt>static</tt> data members of <tt>class</tt> <tt>Fred</tt> is file
+<tt>Fred.cpp</tt> (or <tt>Fred.C</tt> or whatever source file extension you use).
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="inline-functions.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="dtors.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[10.11]"></a>
+</p><h3>[10.11] What's the "<tt>static</tt> initialization order fiasco"?</h3>
+<p>A subtle way to kill your project.
+</p><p>The <em><tt>static</tt> initialization order fiasco</em> is a very subtle and commonly
+misunderstood aspect of C++.  Unfortunately it's very hard to detect — the
+errors occur before <tt>main()</tt> begins.
+</p><p>In short, suppose you have two <tt>static</tt> objects <tt>x</tt> and <tt>y</tt> which exist in
+separate source files, say <tt>x.cpp</tt> and <tt>y.cpp</tt>.  Suppose further
+that the constructor for the <tt>y</tt> object calls some method on the <tt>x</tt> object.
+</p><p>That's it.  It's that simple.
+</p><p>The tragedy is that you have a 50%-50% chance of dying.  If the compilation
+unit for <tt>x.cpp</tt> happens to get initialized first, all is well.  But if
+the compilation unit for <tt>y.cpp</tt> get initialized first, then <tt>y</tt>'s
+constructor will get run before <tt>x</tt>'s constructor, and you're toast.  I.e.,
+<tt>y</tt>'s constructor will call a method on the <tt>x</tt> object, yet the <tt>x</tt> object
+hasn't yet been constructed.
+</p><p>I hear they're hiring down at McDonalds.  Enjoy your new job flipping burgers.
+</p><p>If you think it's "exciting" to play Russian Roulette with live rounds in half the
+chambers, you can stop reading here.  On the other hand if you like to improve
+your chances of survival by preventing disasters in a systematic way, you
+probably want to read <a indepth="true" href="ctors.html#[10.12]">the next FAQ<!--rawtext:[10.12]:rawtext--></a>.
+</p><p>Note: The static initialization order fiasco does <em>not</em> apply to
+builtin/intrinsic types like <tt>int</tt> or <tt>char*</tt>.  For example if you create a
+<tt>static</tt> <tt>float</tt> object, there is never a problem with static initialization
+order.  The only time the static initialization order is truly a <em>fiasco</em>
+is when your <tt>static</tt> or global objects have a constructor.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="inline-functions.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="dtors.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[10.12]"></a>
+</p><h3>[10.12] How do I prevent the "<tt>static</tt>
+initialization order fiasco"?</h3>
+<p>Use the "construct on first use" idiom, which simply means to wrap your
+<tt>static</tt> object inside a function.
+</p><p>For example, suppose you have two classes, <tt>Fred</tt> and <tt>Barney</tt>.
+There is a global <tt>Fred</tt> object called <tt>x</tt>, and a global <tt>Barney</tt>
+object called <tt>y</tt>.  <tt>Barney</tt>'s constructor invokes the
+<tt>goBowling()</tt> method on the <tt>x</tt> object.  The file <tt>x.cpp</tt> defines
+the <tt>x</tt> object:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;File&nbsp;x.cpp</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;#include&nbsp;"Fred.hpp"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Fred&nbsp;x;
+</tt>
+</p><p>The file <tt>y.cpp</tt> defines the <tt>y</tt> object:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;File&nbsp;y.cpp</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;#include&nbsp;"Barney.hpp"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Barney&nbsp;y;
+</tt>
+</p><p>For completeness the <tt>Barney</tt> constructor might look something like this:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;File&nbsp;Barney.cpp</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;#include&nbsp;"Barney.hpp"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Barney::Barney()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x.goBowling();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>As described <a indepth="true" href="ctors.html#[10.11]">above<!--rawtext:[10.11]:rawtext--></a>, the disaster occurs if <tt>y</tt> is
+constructed before <tt>x</tt>, which happens 50% of the time since they're in
+different source files.
+</p><p>There are many solutions to this problem, but a very simple and completely
+portable solution is to replace the global <tt>Fred</tt> object, <tt>x</tt>, with a
+global function, <tt>x()</tt>, that returns the <tt>Fred</tt> object by reference.
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;File&nbsp;x.cpp</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;#include&nbsp;"Fred.hpp"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Fred&amp;&nbsp;x()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;static&nbsp;Fred*&nbsp;ans&nbsp;=&nbsp;new&nbsp;Fred();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;*ans;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>Since <tt>static</tt> local objects are constructed the first time control flows over
+their declaration (only), the above <tt>new&nbsp;Fred()</tt> statement will only
+happen once: the first time <tt>x()</tt> is called.  Every subsequent call will return
+the same <tt>Fred</tt> object (the one pointed to by <tt>ans</tt>).  Then all you
+do is change your usages of <tt>x</tt> to <tt>x()</tt>:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;File&nbsp;Barney.cpp</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;#include&nbsp;"Barney.hpp"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Barney::Barney()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x().goBowling();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>This is called the <em>Construct On First Use Idiom</em> because it does just
+that: the global <tt>Fred</tt> object is constructed on its first use.
+</p><p>The downside of this approach is that the <tt>Fred</tt> object is never
+destructed.  The <em>C++ FAQ Book</em> has a second technique that answers this
+concern (but at the cost of opening a "static <em>de</em>-initialization order
+fiasco").
+</p><p>Note: You don't have to do this for builtin/intrinsic types like <tt>int</tt> or
+<tt>char*</tt>.  For example if you create a <tt>static</tt> or global <tt>float</tt> object, there
+is no need to wrap it within a function.  The only time the static
+initialization order is truly a <em>fiasco</em> is when your <tt>static</tt> or global
+objects have a constructor.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="inline-functions.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="dtors.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[10.13]"></a>
+</p><h3>[10.13] How do I prevent the "<tt>static</tt>
+initialization order fiasco" for my <tt>static</tt> data members?</h3>
+<p>Just use <a indepth="true" href="ctors.html#[10.12]">the same technique just
+described<!--rawtext:[10.12]:rawtext--></a>, but this time use a <tt>static</tt> member function rather than a
+global function.
+</p><p>Suppose you have a class <tt>X</tt> that has a <tt>static</tt> <tt>Fred</tt> object:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;File&nbsp;X.hpp</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;X&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;private:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;static&nbsp;Fred&nbsp;x_;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;};
+</tt>
+</p><p>Naturally this <tt>static</tt> member is initialized separately:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;File&nbsp;X.cpp</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;#include&nbsp;"X.hpp"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Fred&nbsp;X::x_;
+</tt>
+</p><p>Naturally also the <tt>Fred</tt> object will be used in one or more of
+<tt>X</tt>'s methods:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;X::someMethod()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x_.goBowling();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>But now the "disaster scenario" is if someone somewhere somehow calls this
+method before the <tt>Fred</tt> object gets constructed.  For example, if
+someone else creates a static <tt>X</tt> object and invokes its
+<tt>someMethod()</tt> method during <tt>static</tt> initialization, then you're at the
+mercy of the compiler as to whether the compiler will construct <tt>X::x_</tt>
+before or after the <tt>someMethod()</tt> is called.  (Note that the ANSI/ISO
+C++ committee is working on this problem, but compilers aren't yet generally
+available that handle these changes; watch this space for an update in the
+future.)
+</p><p>In any event, it's always portable and safe to change the <tt>X::x_</tt>
+<tt>static</tt> data member into a <tt>static</tt> member function:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;File&nbsp;X.hpp</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;X&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;private:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;static&nbsp;Fred&amp;&nbsp;x();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;};
+</tt>
+</p><p>Naturally this <tt>static</tt> member is initialized separately:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;File&nbsp;X.cpp</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;#include&nbsp;"X.hpp"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Fred&amp;&nbsp;X::x()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;static&nbsp;Fred*&nbsp;ans&nbsp;=&nbsp;new&nbsp;Fred();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;*ans;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>Then you simply change any usages of <tt>x_</tt> to <tt>x()</tt>:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;X::someMethod()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x().goBowling();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>If you're super performance sensitive and you're concerned about the overhead
+of an extra function call on each invocation of <tt>X::someMethod()</tt> you can
+set up a <tt>static</tt> <tt>Fred&amp;</tt> instead.  As you recall, <tt>static</tt> local are
+only initialized once (the first time control flows over their declaration), so
+this will call <tt>X::x()</tt> only once: the first time <tt>X::someMethod()</tt>
+is called:
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;X::someMethod()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;static&nbsp;Fred&amp;&nbsp;x&nbsp;=&nbsp;X::x();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x.goBowling();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>Note: You don't have to do this for builtin/intrinsic types like <tt>int</tt> or
+<tt>char*</tt>.  For example if you create a <tt>static</tt> or global <tt>float</tt> object, there
+is no need to wrap it within a function.  The only time the static
+initialization order is truly a <em>fiasco</em> is when your <tt>static</tt> or global
+objects have a constructor.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="inline-functions.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="dtors.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[10.14]"></a>
+</p><h3>[10.14] How can I handle a constructor that fails?</h3>
+<p>Throw an exception.  See <a indepth="true" href="exceptions.html#[17.1]">[17.1]</a> for details.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="inline-functions.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="dtors.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="bottom"></a>
+<a href="mailto:cline@parashift.com"><img src="mbox.gif" alt="E-Mail" height="26" width="89">&nbsp;E-mail the author</a><br>
+[&nbsp;<a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html"><em>C++ FAQ Lite</em></a>
+|&nbsp;<a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html#table-of-contents">Table&nbsp;of&nbsp;contents</a>
+|&nbsp;<a indepth="true" href="subject-index.html">Subject&nbsp;index</a>
+|&nbsp;<a indepth="true" href="copy-permissions.html#[1.1]">About&nbsp;the&nbsp;author</a>
+|&nbsp;<a indepth="true" href="copy-permissions.html#[1.2]">©</a>
+|&nbsp;<a indepth="true" href="on-line-availability.html#[2.2]">Download&nbsp;your&nbsp;own&nbsp;copy</a>&nbsp;]<br>
+<small>Revised Feb 29, 2000</small>
+
+
+</p>
+
+</body></html>

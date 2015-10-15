@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>[20] Inheritance virtual functions, C++ FAQ Lite</title>
+<meta name="FILENAME" content="virtual-functions.html">
+<meta name="ABSTRACT" content="[20] Inheritance virtual functions, C++ FAQ Lite">
+<meta name="OWNER" content="cline@parashift.com">
+<meta name="AUTHOR" content="Marshall Cline, cline@parashift.com">
+
+<link rev="made" href="mailto:cline@parashift.com">
+</head>
+<body>
+<h1><a name="top"></a>[20] Inheritance — <tt>virtual</tt> functions<br>
+<small><small>(Part of <a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html"><em>C++ FAQ Lite</em></a>, <a indepth="true" href="copy-permissions.html#[1.2]">Copyright&nbsp;© 1991-2000</a>, <a href="http://marshall-cline.att.net/" target="OutsideTheFAQ">Marshall Cline</a>, <a href="mailto:cline@parashift.com">cline@parashift.com</a>)</small></small></h1>
+<hr>
+<h3>FAQs in section [20]:</h3>
+<ul>
+<li><a indepth="true" href="virtual-functions.html#[20.1]">[20.1] What is a "<tt>virtual</tt> member function"?</a></li>
+<li><a indepth="true" href="virtual-functions.html#[20.2]">[20.2] How can C++ achieve dynamic binding yet also
+static typing?</a> <img src="updated.gif" alt="UPDATED!"></li>
+<li><a indepth="true" href="virtual-functions.html#[20.3]">[20.3] What's the difference between how <tt>virtual</tt> and non-<tt>virtual</tt>
+member functions are called?</a></li>
+<li><a indepth="true" href="virtual-functions.html#[20.4]">[20.4] When should my destructor be <tt>virtual</tt>?</a></li>
+<li><a indepth="true" href="virtual-functions.html#[20.5]">[20.5] What is a "<tt>virtual</tt> constructor"?</a> <img src="updated.gif" alt="UPDATED!"></li>
+</ul>
+<p></p><hr>
+<p><a name="[20.1]"></a>
+</p><h3>[20.1] What is a "<tt>virtual</tt> member function"?</h3>
+<p>From an OO perspective, it is the single most important feature of C++:
+<a indepth="true" href="big-picture.html#[6.8]">[6.8]</a>, <a indepth="true" href="big-picture.html#[6.9]">[6.9]</a>.
+</p><p>A <tt>virtual</tt> function allows derived classes to replace the implementation
+provided by the base class.  The compiler makes sure the replacement is always
+called whenever the object in question is actually of the derived class, even
+if the object is accessed by a base pointer rather than a derived pointer.
+This allows algorithms in the base class to be replaced in the derived
+class, even if users don't know about the derived class.
+</p><p>The derived class can either fully replace ("override") the base class
+member function, or the derived class can partially replace ("augment") the
+base class member function.  The latter is accomplished by having the derived
+class member function call the base class member function, if desired.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="basics-of-inheritance.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="proper-inheritance.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[20.2]"></a>
+</p><h3>[20.2] How can C++ achieve dynamic binding yet also
+static typing? <img src="updated.gif" alt="UPDATED!"></h3>
+<small><em>[Recently added the definition of polymorphism thanks to <a href="mailto:kjennings@wallace.com">Kemberli Jennings</a> (on 1/00).  <a indepth="true" href="virtual-functions.html#[20.5]">Click here to go to the next FAQ in the "chain" of recent changes<!--rawtext:[20.5]:rawtext--></a>.]</em></small>
+<p>When you have a pointer to an object, the object may actually be of a class
+that is derived from the class of the pointer (e.g., a <tt>Vehicle*</tt> that is
+actually pointing to a <tt>Car</tt> object; this is called "polymorphism").  Thus
+there are two types: the (static) type of the pointer (<tt>Vehicle</tt>, in this
+case), and the (dynamic) type of the pointed-to object (<tt>Car</tt>, in this case).
+</p><p><em>Static typing</em> means that the legality of a member function invocation
+is checked at the earliest possible moment: by the compiler at compile time.
+The compiler uses the static type of the pointer to determine whether the
+member function invocation is legal.  If the type of the pointer can handle the
+member function, certainly the pointed-to object can handle it as well.  E.g.,
+if <tt>Vehicle</tt> has a certain member function, certainly <tt>Car</tt> also has that
+member function since <tt>Car</tt> is a kind-of <tt>Vehicle</tt>.
+</p><p><em>Dynamic binding</em> means that the address of the code in a member function
+invocation is determined at the last possible moment: based on the dynamic type
+of the object at run time.  It is called "dynamic binding" because the binding
+to the code that actually gets called is accomplished dynamically (at run
+time).  Dynamic binding is a result of <tt>virtual</tt> functions.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="basics-of-inheritance.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="proper-inheritance.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[20.3]"></a>
+</p><h3>[20.3] What's the difference between how <tt>virtual</tt> and non-<tt>virtual</tt>
+member functions are called?</h3>
+<p>Non-<tt>virtual</tt> member functions are resolved statically.  That is, the member
+function is selected statically (at compile-time) based on the type of the
+pointer (or reference) to the object.
+</p><p>In contrast, <tt>virtual</tt> member functions are resolved dynamically (at run-time).
+That is, the member function is selected dynamically (at run-time) based on the
+type of the object, not the type of the pointer/reference to that object.  This
+is called "dynamic binding." Most compilers use some variant of the following
+technique: if the object has one or more <tt>virtual</tt> functions, the compiler puts
+a hidden pointer in the object called a "virtual-pointer" or "v-pointer." This
+v-pointer points to a global table called the "virtual-table" or "v-table."
+</p><p>The compiler creates a v-table for each class that has at least one <tt>virtual</tt>
+function.  For example, if class <tt>Circle</tt> has <tt>virtual</tt> functions for <tt>draw()</tt>
+and <tt>move()</tt> and <tt>resize()</tt>, there would be exactly one v-table associated with
+class <tt>Circle</tt>, even if there were a gazillion <tt>Circle</tt> objects, and the
+v-pointer of each of those <tt>Circle</tt> objects would point to the <tt>Circle</tt>
+v-table.  The v-table itself has pointers to each of the virtual functions in
+the class.  For example, the <tt>Circle</tt> v-table would have three pointers: a
+pointer to <tt>Circle::draw()</tt>, a pointer to <tt>Circle::move()</tt>, and a
+pointer to <tt>Circle::resize()</tt>.
+</p><p>During a dispatch of a <tt>virtual</tt> function, the run-time system follows the
+object's v-pointer to the class's v-table, then follows the appropriate slot in
+the v-table to the method code.
+</p><p>The space-cost overhead of the above technique is nominal: an extra pointer per
+object (but only for objects that will need to do dynamic binding), plus an
+extra pointer per method (but only for virtual methods).  The time-cost
+overhead is also fairly nominal: compared to a normal function call, a
+<tt>virtual</tt> function call requires two extra fetches (one to get the value of the
+v-pointer, a second to get the address of the method).  None of this runtime
+activity happens with non-<tt>virtual</tt> functions, since the compiler resolves
+non-<tt>virtual</tt> functions exclusively at compile-time based on the type of the
+pointer.
+</p><p><em>Note: the above discussion is simplified considerably, since it doesn't
+account for extra structural things like multiple inheritance, <tt>virtual</tt>
+inheritance, RTTI, etc., nor does it account for space/speed issues such as
+page faults, calling a function via a pointer-to-function, etc.  If you want to
+know about those other things, please ask <a href="news:comp.lang.c++"><tt>comp.lang.c++</tt></a>; PLEASE
+DO NOT SEND E-MAIL TO ME!</em>
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="basics-of-inheritance.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="proper-inheritance.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[20.4]"></a>
+</p><h3>[20.4] When should my destructor be <tt>virtual</tt>?</h3>
+<p>When you may <tt>delete</tt> a derived object via a base pointer.
+</p><p><tt>virtual</tt> functions bind to the code associated with the class of the object,
+rather than with the class of the pointer/reference.  When you say <tt>delete&nbsp;basePtr</tt>, and the base class has a <tt>virtual</tt> destructor, the destructor
+that gets invoked is the one associated with the type of the object
+<tt>*basePtr</tt>, rather than the one associated with the type of the pointer.
+This is generally A Good Thing.
+</p><p><em>TECHNO-GEEK WARNING; PUT YOUR PROPELLER HAT ON.</em> <br>
+Technically speaking, you need a base class's destructor to be <tt>virtual</tt> if and
+only if you intend to allow someone to invoke an object's destructor via a base
+class pointer (this is normally done implicitly via <tt>delete</tt>), and the object
+being destructed is of a derived class that has a non-trivial destructor.  A
+class has a non-trivial destructor if it either has an explicitly defined destructor, or
+if it has a member object or a base class that has a non-trivial destructor
+(note that this is a recursive definition (e.g., a class has a non-trivial
+destructor if it has a member object (which has a base class (which has a
+member object (which has a base class (which has an explicitly defined destructor)))))).
+<br>
+<em>END TECHNO-GEEK WARNING; REMOVE YOUR PROPELLER HAT</em>
+</p><p>If you had a hard grokking the previous rule, try this (over)simplified one on
+for size: A class should have a <tt>virtual</tt> destructor unless that class has
+<em>no</em> <tt>virtual</tt> functions.  Rationale: if you have any <tt>virtual</tt> functions
+at all, you're probably going to be doing "stuff" to derived objects via a base
+pointer, and some of the "stuff" you may do may include invoking a destructor
+(normally done implicitly via <tt>delete</tt>).  Plus once you've put the first
+<tt>virtual</tt> function into a class, you've already paid all the per-object space
+cost that you'll ever pay (one pointer per object; note that this is
+theoretically compiler-specific; in practice everyone does it pretty much the
+same way), so making the destructor virtual won't generally cost you anything
+extra.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="basics-of-inheritance.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="proper-inheritance.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[20.5]"></a>
+</p><h3>[20.5] What is a "<tt>virtual</tt> constructor"? <img src="updated.gif" alt="UPDATED!"></h3>
+<small><em>[Recently added the paragraph on Covariant Return Types (on 3/00).  <a indepth="true" href="abcs.html#[22.5]">Click here to go to the next FAQ in the "chain" of recent changes<!--rawtext:[22.5]:rawtext--></a>.]</em></small>
+<p>An idiom that allows you to do something that C++ doesn't directly support.
+</p><p>You can get the effect of a <tt>virtual</tt> constructor by a <tt>virtual</tt> <tt>clone()</tt>
+member function (for copy constructing), or a <tt>virtual</tt> <tt>create()</tt> member
+function (for the <a indepth="true" href="ctors.html#[10.4]">default constructor<!--rawtext:[10.4]:rawtext--></a>).
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Shape&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;virtual&nbsp;~Shape()&nbsp;{&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;<a indepth="true" href="virtual-functions.html#[20.4]">A&nbsp;virtual&nbsp;destructor<!--rawtext:[20.4]:rawtext--></a></em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;virtual&nbsp;void&nbsp;draw()&nbsp;=&nbsp;0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;<a indepth="true" href="abcs.html#[22.4]">A&nbsp;pure&nbsp;virtual&nbsp;function<!--rawtext:[22.4]:rawtext--></a></em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;virtual&nbsp;void&nbsp;move()&nbsp;=&nbsp;0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;virtual&nbsp;Shape*&nbsp;clone()&nbsp;&nbsp;const&nbsp;=&nbsp;0;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Uses&nbsp;the&nbsp;copy&nbsp;constructor</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;virtual&nbsp;Shape*&nbsp;create()&nbsp;const&nbsp;=&nbsp;0;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;Uses&nbsp;the&nbsp;<a indepth="true" href="ctors.html#[10.4]">default&nbsp;constructor<!--rawtext:[10.4]:rawtext--></a></em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;};<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Circle&nbsp;:&nbsp;public&nbsp;Shape&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;public:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Circle*&nbsp;clone()&nbsp;&nbsp;const&nbsp;{&nbsp;return&nbsp;new&nbsp;Circle(*this);&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Circle*&nbsp;create()&nbsp;const&nbsp;{&nbsp;return&nbsp;new&nbsp;Circle();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;};
+</tt>
+</p><p>In the <tt>clone()</tt> member function, the <tt>new&nbsp;Circle(*this)</tt> code calls
+<tt>Circle</tt>'s copy constructor to copy the state of <tt>this</tt> into the newly created
+<tt>Circle</tt> object.  In the <tt>create()</tt> member function, the <tt>new&nbsp;Circle()</tt>
+code calls <tt>Circle</tt>'s <a indepth="true" href="ctors.html#[10.4]">default constructor<!--rawtext:[10.4]:rawtext--></a>.
+</p><p>Users use these as if they were "<tt>virtual</tt> constructors":
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;void&nbsp;userCode(Shape&amp;&nbsp;s)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Shape*&nbsp;s2&nbsp;=&nbsp;s.clone();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Shape*&nbsp;s3&nbsp;=&nbsp;s.create();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;...</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delete&nbsp;s2;&nbsp;&nbsp;&nbsp;&nbsp;</tt><em>//&nbsp;You&nbsp;probably&nbsp;need&nbsp;a&nbsp;<a indepth="true" href="virtual-functions.html#[20.4]">virtual&nbsp;destructor<!--rawtext:[20.4]:rawtext--></a>&nbsp;here</em><tt><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delete&nbsp;s3;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+</tt>
+</p><p>This function will work correctly regardless of whether the <tt>Shape</tt> is a
+<tt>Circle</tt>, <tt>Square</tt>, or some other kind-of <tt>Shape</tt> that doesn't even exist yet.
+</p><p>Note: The return type of <tt>Circle</tt>'s <tt>clone()</tt> member function is intentionally
+different from the return type of <tt>Shape</tt>'s <tt>clone()</tt> member function.  This is
+called <em>Covariant Return Types</em>, a feature that was not originally part
+of the language.  If your compiler complains at the declaration of <tt>Circle*&nbsp;clone()&nbsp;const</tt> within class <tt>Circle</tt> (e.g., saying "The return type is
+different" or "The member function's type differs from the base class virtual
+function by return type alone"), you have an old compiler and you'll have to
+change the return type to <tt>Shape*</tt>.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="basics-of-inheritance.html">Previous&nbsp;section</a> |&nbsp;<a indepth="true" href="proper-inheritance.html">Next&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="bottom"></a>
+<a href="mailto:cline@parashift.com"><img src="mbox.gif" alt="E-Mail" height="26" width="89">&nbsp;E-mail the author</a><br>
+[&nbsp;<a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html"><em>C++ FAQ Lite</em></a>
+|&nbsp;<a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html#table-of-contents">Table&nbsp;of&nbsp;contents</a>
+|&nbsp;<a indepth="true" href="subject-index.html">Subject&nbsp;index</a>
+|&nbsp;<a indepth="true" href="copy-permissions.html#[1.1]">About&nbsp;the&nbsp;author</a>
+|&nbsp;<a indepth="true" href="copy-permissions.html#[1.2]">©</a>
+|&nbsp;<a indepth="true" href="on-line-availability.html#[2.2]">Download&nbsp;your&nbsp;own&nbsp;copy</a>&nbsp;]<br>
+<small>Revised Feb 29, 2000</small>
+
+
+</p>
+
+</body></html>

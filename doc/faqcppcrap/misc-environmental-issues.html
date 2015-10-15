@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>[35] Miscellaneous environmental issues, C++ FAQ Lite</title>
+<meta name="FILENAME" content="misc-environmental-issues.html">
+<meta name="ABSTRACT" content="[35] Miscellaneous environmental issues, C++ FAQ Lite">
+<meta name="OWNER" content="cline@parashift.com">
+<meta name="AUTHOR" content="Marshall Cline, cline@parashift.com">
+
+<link rev="made" href="mailto:cline@parashift.com">
+</head>
+<body>
+<h1><a name="top"></a>[35] Miscellaneous environmental issues<br>
+<small><small>(Part of <a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html"><em>C++ FAQ Lite</em></a>, <a indepth="true" href="copy-permissions.html#[1.2]">Copyright&nbsp;© 1991-2000</a>, <a href="http://marshall-cline.att.net/" target="OutsideTheFAQ">Marshall Cline</a>, <a href="mailto:cline@parashift.com">cline@parashift.com</a>)</small></small></h1>
+<hr>
+<h3>FAQs in section [35]:</h3>
+<ul>
+<li><a indepth="true" href="misc-environmental-issues.html#[35.1]">[35.1] Is there a TeX or LaTeX macro that fixes the spacing on
+"C++"?</a></li>
+<li><a indepth="true" href="misc-environmental-issues.html#[35.2]">[35.2] Are there any pretty-printers that reformat C++ source
+code?</a></li>
+<li><a indepth="true" href="misc-environmental-issues.html#[35.3]">[35.3] Is there a C++-mode for GNU emacs?  If so, where can I
+get it?</a></li>
+<li><a indepth="true" href="misc-environmental-issues.html#[35.4]">[35.4] Where can I get OS-specific questions answered (e.g.,
+BC++, DOS, Windows, etc)?</a></li>
+<li><a indepth="true" href="misc-environmental-issues.html#[35.5]">[35.5] Why does my DOS C++ program says "Sorry: floating
+point code not linked"?</a></li>
+<li><a indepth="true" href="misc-environmental-issues.html#[35.6]">[35.6] Why does my BC++ Windows app crash when I'm not running the
+BC45 IDE?</a></li>
+</ul>
+<p></p><hr>
+<p><a name="[35.1]"></a>
+</p><h3>[35.1] Is there a TeX or LaTeX macro that fixes the spacing on
+"C++"?</h3>
+<p>Yes, here are three (the first prevents line breaks between the <tt>C</tt> and "++"):
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;\def\CC{{C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\tiny\bf&nbsp;++}}}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;\def\CC{C\raise.22ex\hbox{{\footnotesize&nbsp;+}}\raise.22ex\hbox{\footnotesize&nbsp;+}}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;\def\CC{{C\hspace{-.05em}\raisebox{.4ex}{\tiny\bf&nbsp;++}}}
+</tt>
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="misc-technical-issues.html">Previous&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[35.2]"></a>
+</p><h3>[35.2] Are there any pretty-printers that reformat C++ source
+code?</h3>
+<p>In alphabetical order:
+</p><ul>
+<li>Artistic Style is a reindenter and reformatter of C++, C and Java
+source code.  It is available from
+<a href="http://gene.md.huji.ac.il/~tald/astyle/" target="OutsideTheFAQ"><tt>gene.md.huji.ac.il/~tald/astyle/</tt></a></li>
+<li>C++2LaTeX is a LaTeX pretty printer.  It is available from
+<a href="http://mirriwinni.cse.rmit.edu.au/ftp/pub/languages/C++2LaTeX-4.0.tar.gz" target="OutsideTheFAQ"><tt>mirriwinni.cse.rmit.edu.au/ftp/pub/languages/C++2LaTeX-4.0.tar.gz</tt></a></li>
+<li>C-Clearly by V Communications, Inc. is a Windows program that comes
+with standard formatting templates and also allows you to customize your own.
+<a href="http://www.mixsoftware.com/product/ccl.htm" target="OutsideTheFAQ"><tt>www.mixsoftware.com/product/ccl.htm</tt></a></li>
+<li>GNU <tt>indent</tt> program may help.  It's available at
+<a href="http://www.arceneaux.com/indent.html" target="OutsideTheFAQ"><tt>www.arceneaux.com/indent.html</tt></a>.  You can also find an
+"official" GNU mirror site by looking at
+<a href="http://www.gnu.org/order/ftp.html" target="OutsideTheFAQ"><tt>www.gnu.org/order/ftp.html</tt></a> or perhaps the original GNU site,
+<a href="ftp://prep.ai.mit.edu/pub/gnu/" target="OutsideTheFAQ"><tt>ftp://prep.ai.mit.edu/pub/gnu/</tt></a> (e.g., if the current version is 1.9.1
+you could use <a href="ftp://prep.ai.mit.edu/pub/gnu/indent-1.9.1.tar.gz" target="OutsideTheFAQ"><tt>ftp://prep.ai.mit.edu/pub/gnu/indent-1.9.1.tar.gz</tt></a>).
+</li><li><tt>tgrind</tt> is a Unix based pretty printer.  It usually comes with the
+public distribution of TeX and LaTeX in the directory
+<tt>"...tex82/contrib/van/tgrind"</tt>.  A more up-to-date version of tgrind by
+Jerry Leichter can be found on: <a href="ftp://venus.ycc.yale.edu/pub" target="OutsideTheFAQ"><tt>ftp://venus.ycc.yale.edu/pub</tt></a> in
+[.TGRIND].  <em>[Note: If anyone has an updated URL for tgrind, please let me
+know (<a href="mailto:cline@parashift.com">cline@parashift.com</a>).]</em></li>
+</ul>
+<p>Finally, you might consider <tt>lgrind</tt> which is another C++ to LaTeX
+translator (<a href="ftp://ftp.tex.ac.uk/pub/archive/README.mirrors" target="OutsideTheFAQ">check for
+the closest mirror site of the ctan archive</a>).  The following is a
+grind definition for C++ (but this one doesn't recognize some new keywords such
+as <tt>bool</tt> or <tt>wchar_t</tt>, and it doesn't recognize a file ending with
+<tt>.cpp</tt> as C++):
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;C++|c++|CC:\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:pb=\p\d?\(:cf:np=\)\d?;:bb={:be=}:\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:cb=/*:ce=*/:ab=//:ae=$:sb=":se=\e":lb=':\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:zb=@:ze=@:tb=%%:te=%%:mb=%\$:me=\$%:vb=%\|:ve=\|%:\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:le=\e':tl:id=_~\::\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:kw=asm&nbsp;auto&nbsp;break&nbsp;case&nbsp;cdecl&nbsp;char&nbsp;continue&nbsp;default&nbsp;do&nbsp;double&nbsp;else\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;enum&nbsp;extern&nbsp;far&nbsp;float&nbsp;for&nbsp;fortran&nbsp;goto&nbsp;huge&nbsp;if&nbsp;int&nbsp;interrupt&nbsp;long\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;near&nbsp;pascal&nbsp;register&nbsp;return&nbsp;short&nbsp;signed&nbsp;sizeof&nbsp;static&nbsp;struct\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;switch&nbsp;typedef&nbsp;union&nbsp;unsigned&nbsp;while&nbsp;void\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#define&nbsp;#else&nbsp;#endif&nbsp;#if&nbsp;#ifdef&nbsp;#ifndef&nbsp;#include&nbsp;#undef&nbsp;#&nbsp;define\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;endif&nbsp;ifdef&nbsp;ifndef&nbsp;include&nbsp;undef&nbsp;defined&nbsp;#pragma\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;const&nbsp;delete&nbsp;friend&nbsp;inline&nbsp;new&nbsp;operator&nbsp;overload&nbsp;private\<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;protected&nbsp;public&nbsp;template&nbsp;this&nbsp;virtual:
+</tt>
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="misc-technical-issues.html">Previous&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[35.3]"></a>
+</p><h3>[35.3] Is there a C++-mode for GNU emacs?  If so, where can I
+get it?</h3>
+<p>Yes, there is a C++-mode for GNU emacs.
+</p><p>The latest and greatest version of C++-mode (and C-mode) is implemented in the
+file <tt>cc-mode.el</tt>.  It is an extension of Detlef and Clamen's version.  A
+version is included with emacs.  Newer version are available from the elisp
+archives.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="misc-technical-issues.html">Previous&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[35.4]"></a>
+</p><h3>[35.4] Where can I get OS-specific questions answered (e.g.,
+BC++, DOS, Windows, etc)?</h3>
+<p>See one of the following:
+</p><ul>
+<li>MS-DOS issues: <a href="news:comp.os.msdos.programmer"><tt>comp.os.msdos.programmer</tt></a></li>
+<li>MS-Windows issues:
+<a href="news:comp.windows.ms.programmer"><tt>comp.windows.ms.programmer</tt></a></li>
+<li>Unix issues: <a href="news:comp.unix.programmer"><tt>comp.unix.programmer</tt></a></li>
+<li>Borland C++ issues (e.g., OWL, BC++ compiler bugs, general C++
+concepts, windows programming):
+<ul>
+<li>Using your Web browser:
+<a href="http://www.cs.rpi.edu/~wiseb/owl-list/" target="OutsideTheFAQ"><tt>www.cs.rpi.edu/~wiseb/owl-list/</tt></a></li>
+<li>To get on the mailing list: send an e-mail message with the word
+"SUBSCRIBE" in the <tt>Subject:</tt> line to
+<a href="mailto:majordomo@netlab.cs.rpi.edu"><tt>majordomo@netlab.cs.rpi.edu</tt></a></li>
+<li>To get the FAQ:
+<a href="ftp://ftp.netlab.cs.rpi.edu/pub/lists/owl-list-faq/drafts/owl_faq.hlp" target="OutsideTheFAQ"><tt>ftp://ftp.netlab.cs.rpi.edu/pub/lists/owl-list-faq/drafts/owl_faq.hlp</tt></a></li>
+</ul>
+</li>
+</ul>
+<p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="misc-technical-issues.html">Previous&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[35.5]"></a>
+</p><h3>[35.5] Why does my DOS C++ program says "Sorry: floating
+point code not linked"?</h3>
+<p>The compiler attempts to save space in the executable by not including the
+float-to-string format conversion routines unless they are necessary, but
+sometimes it guesses wrong, and gives you the above error message.  You can fix
+this by (1) using <tt>&lt;iostream.h&gt;</tt> instead of <tt>&lt;stdio.h&gt;</tt>, or (2) by including
+the following function somewhere in your compilation (but don't call it!):
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;static&nbsp;void&nbsp;dummyfloat(float&nbsp;*x)&nbsp;{&nbsp;float&nbsp;y;&nbsp;dummyfloat(&amp;y);&nbsp;}
+</tt>
+</p><p>See FAQ on stream I/O for more reasons to use <tt>&lt;iostream.h&gt;</tt> <i>vs.</i> <tt>&lt;stdio.h&gt;</tt>.
+</p><p><small>[&nbsp;<a href="#top">Top</a> |&nbsp;<a href="#bottom">Bottom</a> |&nbsp;<a indepth="true" href="misc-technical-issues.html">Previous&nbsp;section</a> ]</small>
+</p><hr>
+<p><a name="[35.6]"></a>
+</p><h3>[35.6] Why does my BC++ Windows app crash when I'm not running the
+BC45 IDE?</h3>
+<p>If you're using BC++ for a Windows app, and it works OK as long as you have the
+BC45 IDE running, but when the BC45 IDE is shut down you get an exception
+during the creation of a window, then add the following line of code to the
+<tt>InitMainWindow()</tt> member function of your application
+(<tt>YourApp::InitMainWindow()</tt>):
+</p><p><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;EnableBWCC(TRUE);
+</tt>
+</p><p>
+</p><hr>
+<p><a name="bottom"></a>
+<a href="mailto:cline@parashift.com"><img src="mbox.gif" alt="E-Mail" height="26" width="89">&nbsp;E-mail the author</a><br>
+[&nbsp;<a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html"><em>C++ FAQ Lite</em></a>
+|&nbsp;<a href="http://sydney.edu.au/engineering/it/~sholden/TUTORING/PPU/2000sem2/RESOURCES/C++-FAQ/index.html#table-of-contents">Table&nbsp;of&nbsp;contents</a>
+|&nbsp;<a indepth="true" href="subject-index.html">Subject&nbsp;index</a>
+|&nbsp;<a indepth="true" href="copy-permissions.html#[1.1]">About&nbsp;the&nbsp;author</a>
+|&nbsp;<a indepth="true" href="copy-permissions.html#[1.2]">©</a>
+|&nbsp;<a indepth="true" href="on-line-availability.html#[2.2]">Download&nbsp;your&nbsp;own&nbsp;copy</a>&nbsp;]<br>
+<small>Revised Feb 29, 2000</small>
+
+
+</p>
+
+</body></html>

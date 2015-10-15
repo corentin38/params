@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="../../sitemap.xsl" type="text/xsl" media="all"?>
+<site>
+<page file="index.html" text="C++ FAQ LITE" title="C++ FAQ LITE">
+<page file="copy-permissions.html" text="Copyright © 1991-2000" title="[1] Copying permissions, C++ FAQ Lite"/>
+<page file="default.html" text="USA #2" title="Registrant WHOIS contact information verification"/>
+<page file="on-line-availability.html" text="Use the one-click download feature to get your own local copy" title="[2] On-line sites that distribute this document, C++ FAQ Lite"/>
+<page file="subject-index.html" text="the extensive subject index (774 fine-grained topics)" title="Subject Index, C++ FAQ Lite"/>
+<page file="faq-book.html" text="[3] C++-FAQ-Book versus C++-FAQ-Lite" title="[3] C++-FAQ-Book versus C++-FAQ-Lite, C++ FAQ Lite"/>
+<page file="recent-changes.html" text="[4] Recent changes to this document" title="[4] Recent changes to this document, C++ FAQ Lite"/>
+<page file="how-to-post.html" text="[5] Netiquette when posting to comp.lang.c++" title="[5] Netiquette when posting to comp.lang.c++, C++ FAQ Lite"/>
+<page file="big-picture.html" text="[6] Big Picture issues" title="[6] Big Picture issues, C++ FAQ Lite"/>
+<page file="classes-and-objects.html" text="[7] Classes and objects" title="[7] Classes and objects, C++ FAQ Lite"/>
+<page file="references.html" text="[8] References" title="[8] References, C++ FAQ Lite"/>
+<page file="inline-functions.html" text="[9] Inline functions" title="[9] Inline functions, C++ FAQ Lite"/>
+<page file="ctors.html" text="[10] Constructors" title="[10] Constructors, C++ FAQ Lite"/>
+<page file="dtors.html" text="[11] Destructors" title="[11] Destructors, C++ FAQ Lite"/>
+<page file="assignment-operators.html" text="[12] Assignment operators" title="[12] Assignment operators, C++ FAQ Lite"/>
+<page file="operator-overloading.html" text="[13] Operator overloading" title="[13] Operator overloading, C++ FAQ Lite"/>
+<page file="friends.html" text="[14] Friends" title="[14] Friends, C++ FAQ Lite"/>
+<page file="input-output.html" text="[15] Input/output via &lt;iostream.h&gt; and &lt;stdio.h&gt;" title="[15] Input/output via &lt;iostream.h&gt; and &lt;stdio.h&gt;, C++ FAQ Lite"/>
+<page file="freestore-mgmt.html" text="[16] Freestore management" title="[16] Freestore management, C++ FAQ Lite"/>
+<page file="exceptions.html" text="[17] Exceptions and error handling" title="[17] Exceptions and error handling, C++ FAQ Lite"/>
+<page file="const-correctness.html" text="[18] Const correctness" title="[18] Const correctness, C++ FAQ Lite"/>
+<page file="basics-of-inheritance.html" text="[19] Inheritance — basics" title="[19] Inheritance basics, C++ FAQ Lite"/>
+<page file="virtual-functions.html" text="[20] Inheritance — virtual functions" title="[20] Inheritance virtual functions, C++ FAQ Lite"/>
+<page file="proper-inheritance.html" text="[21] Inheritance — proper inheritance and substitutability" title="[21] Inheritance proper inheritance and substitutability, C++ FAQ Lite"/>
+<page file="abcs.html" text="[22] Inheritance — abstract base classes (ABCs)" title="[22] Inheritance abstract base classes (ABCs), C++ FAQ Lite"/>
+<page file="strange-inheritance.html" text="[23] Inheritance — what your mother never told you" title="[23] Inheritance what your mother never told you, C++ FAQ Lite"/>
+<page file="private-inheritance.html" text="[24] Inheritance — private and protected inheritance" title="[24] Inheritance private and protected inheritance, C++ FAQ Lite"/>
+<page file="coding-standards.html" text="[25] Coding standards" title="[25] Coding standards, C++ FAQ Lite"/>
+<page file="how-to-learn-cpp.html" text="[26] Learning OO/C++" title="[26] Learning OO/C++, C++ FAQ Lite"/>
+<page file="smalltalk.html" text="[27] Learning C++ if you already know Smalltalk" title="[27] Learning C++ if you already know Smalltalk, C++ FAQ Lite"/>
+<page file="value-vs-ref-semantics.html" text="[28] Reference and value semantics" title="[28] Reference and value semantics, C++ FAQ Lite"/>
+<page file="mixing-c-and-cpp.html" text="[29] How to mix C and C++" title="[29] How to mix C and C++, C++ FAQ Lite"/>
+<page file="pointers-to-members.html" text="[30] Pointers to member functions" title="[30] Pointers to member functions, C++ FAQ Lite"/>
+<page file="containers-and-templates.html" text="[31] Container classes and templates" title="[31] Container classes and templates, C++ FAQ Lite"/>
+<page file="class-libraries.html" text="[32] Class libraries" title="[32] Class libraries, C++ FAQ Lite"/>
+<page file="compiler-dependencies.html" text="[33] Compiler dependencies" title="[33] Compiler dependencies, C++ FAQ Lite"/>
+<page file="misc-technical-issues.html" text="[34] Miscellaneous technical issues" title="[34] Miscellaneous technical issues, C++ FAQ Lite"/>
+<page file="misc-environmental-issues.html" text="[35] Miscellaneous environmental issues" title="[35] Miscellaneous environmental issues, C++ FAQ Lite"/>
+</page>
+</site>
