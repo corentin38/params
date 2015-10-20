@@ -1,39 +1,27 @@
-/** -*- c-basic-offset: 3 -*- 
- *
- * ENSICAEN
- * 6 Boulevard Maréchal Juin 
- * F-14050 Caen Cedex
- * 
- * Ce fichier est l'oeuvre d'élèves de l'ENSI de Caen. Il ne peut être 
- * reproduit, utilisé ou modifié sans l'avis express de ses auteurs.
- * 
+/**
+ * INSERT LICENCE INFORMATION HERE 
  */ 
 
 /**
  * @author Corentin MARCIAU	<corentin@marciau.fr>
- *
- * @version 1.0.0 / %D-%M-%y
- * @todo 
- * @bug 
  */
 
 /**
  * @file %f
- * @brief 
- *
- * 
  */
 
-#include "***.hh"
+#include "***.hpp"
 
-/** @brief 
- *
- * 
- * @param 
- * @param 
- * @return
- */
-int fonction(){
-   return 0;
+#include <iostream>
+
+basics::ma_classe::ma_classe(int param1, int param2) :
+   param1_(param1), param2_(param2)
+{
+   std::cout << "Passage dans le constructeur de ma_classe !\n";
 }
 
+int basics::ma_classe::ma_methode(int param3, int param4) 
+{
+   std::cout << "param3 et param4 : " << param3 << " " << param4 << "\n";
+   return 42;
+}
