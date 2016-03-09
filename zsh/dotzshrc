@@ -1,0 +1,52 @@
+# Mon zsh rc rien qu'à moi 09/03/2016
+
+# Activer la complétion de ROXOR
+autoload -U compinit
+compinit
+
+# Améliorer la complétion ??
+zstyle ':completion:*:descriptions' format '%U%B%d%b%u'
+zstyle ':completion:*:warnings' format '%BDafuck are ya lookin for?? : %d%b'
+zstyle ':completion:*' menu select=2
+zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
+
+# Ignorer les fichiers déjà présents dans cp, rm et mv
+zstyle ':completion:*:rm:*' ignore-line yes
+zstyle ':completion:*:mv:*' ignore-line yes
+zstyle ':completion:*:cp:*' ignore-line yes
+
+# Ajouter les les commandes dispo seulement avec sudo
+zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin \
+                           /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin
+
+# Auto correct : bye bye sl ...
+setopt correctall
+
+# Des prompts tout fait
+autoload -U promptinit
+promptinit
+
+# Complétion avec couleurs
+zmodload zsh/complist
+setopt extendedglob
+zstyle ':completion:*:*:kill:*:processes' list-colors "=(#b) #([0-9]#)*=36=31"
+
+# don't put duplicate lines in the history. See bash(1) for more options
+# ... or force ignoredups and ignorespace
+setopt HIST_IGNORE_DUPS
+
+# Binding pour chercher plus haut dans l'historique
+[[ -n "${key[PageUp]}"   ]]  && bindkey  "${key[PageUp]}"    history-beginning-search-backward
+[[ -n "${key[PageDown]}" ]]  && bindkey  "${key[PageDown]}"  history-beginning-search-forward
+
+prompt adam2
+
+## Imported from bashrc
+
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
+
+export PATH=~/bin:$PATH
+
+source /usr/local/share/chruby/chruby.sh

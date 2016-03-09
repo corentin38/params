@@ -1,0 +1,8 @@
+alias emacs="emacs 2>/dev/null"
+alias basta="rm -f *~ *.aux *.log *.pdf *.out *.tns"
+alias sk="skype"
+alias gitpp="git add *pp"
+alias gits="git status"
+alias wo="cd /home/corentin/work/projects/basics/pmb"
+alias ls="ls --color"
+alias ll="ls -la --color"
