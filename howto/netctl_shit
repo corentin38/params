@@ -1,0 +1,21 @@
+## Démarrer ce putain de wifi
+
+# Pour voir ce qui merde dans les services
+$ systemctl
+
+# Pour voir les profils de netctl
+$ netctl list
+
+# Pour voir l'aide de netctl
+$ netctl
+
+# si tout chie
+$ ip link set wlp2s0 down
+
+# Normalement, après, wifi-menu devrait re-marcher
+
+# Pour se connecter tout seul à un profil wifi :
+$ netctl enable [profil]
+
+# Pour remettre d'applomb le bousin
+$ systemctl reset-failed
